@@ -1,8 +1,8 @@
-BINARY_NAME=events-core
+BINARY_NAME=gemini
 
 build:
-	cd cmd/server; CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $(BINARY_NAME) -mod=vendor
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o $(BINARY_NAME)
 
 dev:
-	cd cmd/server; go build -o $(BINARY_NAME) -v
-	cd cmd/server; ./$(BINARY_NAME) -config=./configs/config-dev.yaml
+	go build -o $(BINARY_NAME) -v
+	#./$(BINARY_NAME) -config=./configs/config-dev.yaml

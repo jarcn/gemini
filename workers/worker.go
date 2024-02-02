@@ -79,31 +79,15 @@ var template = `您好，请扮演一个专业的猎头,排除对该求职者的
                                      position_city:[""]
                                      religion:默认[""]
                                      address:默认""
-                                     tripartite_url:[""]
-
-                        参照样本如下:
-                            数据:%s
-                            答案:%s
-
-                            数据:%s
-                            答案:%s
-
-                            数据:%s
-                            答案:%s
-
-                            数据:%s
-                            答案:%s
-
-
-                         <附件简历>
-                               %s
-                         </附件简历>`
+                                     tripartite_url:[""]`
 
 func CallGemini(data string, pool *queue.GeminiQueue) {
 	c := pool.Dequeue()
+	defer pool.Enqueue(c)
 	ctx := context.Background()
-	generateContent, _ := c.GenerateContent(ctx, genai.Text(template))
+	generateContent, err := c.GenerateContent(ctx, genai.Text("Write a story about a magic backpack."))
+	if err != nil {
+		log.Println(err)
+	}
 	log.Println(generateContent)
-	content, _ := c.GenerateContent(ctx, genai.Text(data))
-	log.Println(content)
 }
