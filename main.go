@@ -1,41 +1,20 @@
 package main
 
 import (
-	"flag"
-	"gemini/api/route"
-	"gemini/configs"
-	"gemini/queue"
-	"gemini/store/client"
-	"github.com/gin-gonic/gin"
-	"strings"
+	"gemini/cache"
+	"gemini/db"
+	"gemini/tasks"
+	"log"
 )
 
-var ServerConfig configs.Config
-var GeminiPool *queue.GeminiQueue
-
 func init() {
-	var configPath string
-	flag.StringVar(&configPath, "config", "", "配置文件地址")
-	flag.Parse()
-	if configPath == "" {
-		panic("You must have one config.")
-	}
-	ServerConfig = configs.GetConfig(configPath)
-}
-
-func init() {
-	if ServerConfig.SourceKey != "" {
-		GeminiPool = queue.NewSafeQueue()
-		keys := strings.Split(ServerConfig.SourceKey, ",")
-		queue.InitQueue(keys, GeminiPool)
-	}
+	db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data")
+	cache.InitKeyCache()
 }
 
 func main() {
-	r := gin.Default()
-	route.Register(r, GeminiPool)
-	defer func() {
-		client.Close() //关闭mysql session
-	}()
-	r.Run(":8080")
+	// 数据处理程序已经准备好
+	// TODO 组织数据进行处理
+	result := tasks.CallGemini("", "", cache.GetKey())
+	log.Println(result)
 }
