@@ -84,7 +84,7 @@ func doMerge(msg []byte) {
 	url, _ := data["url"].(string)
 	result := store.GeminiResult{
 		GeminiKey:   key,
-		ProfileData: "",
+		ProfileData: profile,
 		CVURL:       url,
 		CVData:      profile,
 	}
@@ -93,7 +93,7 @@ func doMerge(msg []byte) {
 		fmt.Println("insert data error:", err)
 		return
 	}
-	step1 := tasks.CallGemini(profile, "", key)
+	step1 := tasks.CallGemini(profile, profile, key)
 	result.GeminiStep1 = step1
 	result.ID = id
 	result.Update(db.Client())
