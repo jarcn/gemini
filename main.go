@@ -11,14 +11,16 @@ import (
 )
 
 func init() {
-	db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data")
+	db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
+	//db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
 	cache.InitKeyCache()
 }
 
 func main() {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = false
-	consumer, err := sarama.NewConsumer([]string{"10.129.0.78:9092", "10.129.0.180:9092", "10.129.0.85:9092"}, config)
+	consumer, err := sarama.NewConsumer([]string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"}, config) //生产环境
+	//consumer, err := sarama.NewConsumer([]string{"10.129.0.78:9092", "10.129.0.180:9092", "10.129.0.85:9092"}, config) //预发环境
 	if err != nil {
 		fmt.Println("Error creating consumer:", err)
 		return
@@ -51,7 +53,6 @@ func main() {
 			for {
 				select {
 				case msg := <-pc.Messages():
-					//todo 解析kafka中的数据进行合并
 					fmt.Printf("Partition: %d, Offset: %d, Key: %s, Value: %s\n", msg.Partition, msg.Offset, string(msg.Key), string(msg.Value))
 				case err := <-pc.Errors():
 					fmt.Println("Error:", err)
