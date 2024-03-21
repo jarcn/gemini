@@ -1,4 +1,4 @@
-package tlp
+package tpl
 
 var STEP1 = `#Role
 You are a local Indonesian professional recruitment consultant, best at organizing and summarizing various formats of resumes from Indonesian job seekers.

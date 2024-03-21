@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"gemini/tlp"
+	"gemini/tpl"
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
 	"log"
@@ -60,13 +60,13 @@ func CallGemini(ocrCv, profileCv, key string) string {
 }
 
 func parseContent(ocrCv, profileCv string) string {
-	tpl, err := template.New("gemini").Parse(tlp.STEP1)
+	temple, err := template.New("gemini").Parse(tpl.STEP1)
 	if err != nil {
 		panic(err)
 	}
 	data := Data{OcrCV: ocrCv, ProfileCV: profileCv}
 	var buf bytes.Buffer
-	err = tpl.Execute(&buf, data)
+	err = temple.Execute(&buf, data)
 	if err != nil {
 		panic(err)
 	}
