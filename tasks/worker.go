@@ -52,21 +52,20 @@ func CallGemini(ocrCv, profileCv, key string) string {
 }
 
 func parseContent(ocrCv, profileCv string) string {
-	tpl, err := template.New("gemini").Parse(tlp.TLP)
+	tpl, err := template.New("gemini").Parse(tlp.STEP1)
 	if err != nil {
 		panic(err)
 	}
-	data := struct {
-		OcrCV     string
-		ProfileCV string
-	}{
-		OcrCV:     ocrCv,
-		ProfileCV: profileCv,
-	}
+	data := Data{OcrCV: ocrCv, ProfileCV: profileCv}
 	var buf bytes.Buffer
 	err = tpl.Execute(&buf, data)
 	if err != nil {
 		panic(err)
 	}
 	return buf.String()
+}
+
+type Data struct {
+	OcrCV     string
+	ProfileCV string
 }
