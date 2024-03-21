@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"gemini/cache"
 	"gemini/db"
@@ -53,7 +54,7 @@ func main() {
 			for {
 				select {
 				case msg := <-pc.Messages():
-					fmt.Printf("Partition: %d, Offset: %d, Key: %s, Value: %s\n", msg.Partition, msg.Offset, string(msg.Key), string(msg.Value))
+					doMerge(msg.Value)
 				case err := <-pc.Errors():
 					fmt.Println("Error:", err)
 				}
@@ -67,4 +68,34 @@ func main() {
 	fmt.Println("Interrupt received, shutting down consumer...")
 	wg.Wait()
 	fmt.Println("Consumer shutdown complete.")
+}
+
+func doMerge(msg []byte) {
+	key := cache.GetKey()
+	fmt.Println("use gemini key:", key)
+	data := make(map[string]interface{})
+	err := json.Unmarshal(msg, &data)
+	if err != nil {
+		fmt.Println("Error decoding JSON:", err)
+		return
+	}
+	extend, ok := data["extend"].(string)
+	if !ok {
+		fmt.Println("Name field not found or not a string")
+	} else {
+		fmt.Println("extend:", extend)
+	}
+	profile, ok := data["profile"].(string)
+	if !ok {
+		fmt.Println("Name field not found or not a string")
+	} else {
+		fmt.Println("profile :", profile)
+	}
+	url, ok := data["url"].(string)
+	if !ok {
+		fmt.Println("Name field not found or not a string")
+	} else {
+		fmt.Println("pdf url:", url)
+	}
+
 }
