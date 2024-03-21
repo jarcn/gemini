@@ -10,6 +10,7 @@ import (
 	"github.com/Shopify/sarama"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 )
 
@@ -56,7 +57,9 @@ func main() {
 			for {
 				select {
 				case msg := <-pc.Messages():
+					fmt.Println("start merge ...")
 					doMerge(msg.Value)
+					fmt.Println("end merge")
 				case err := <-pc.Errors():
 					fmt.Println("Error:", err)
 				}
@@ -94,7 +97,18 @@ func doMerge(msg []byte) {
 		return
 	}
 	step1 := tasks.CallGemini(profile, profile, key)
-	result.GeminiStep1 = step1
+	jsonResult := getJSON(step1)
+	result.GeminiStep1 = jsonResult
 	result.ID = id
 	result.Update(db.Client())
+	fmt.Println("save gemini result", jsonResult)
+}
+
+func getJSON(s string) string {
+	start := strings.Index(s, "{")
+	end := strings.LastIndex(s, "}")
+	if start == -1 || end == -1 || start >= end {
+		return ""
+	}
+	return s[start : end+1]
 }

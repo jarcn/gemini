@@ -86,7 +86,7 @@ Extract key fields from the input CV or Profile within the specified range; the 
             "email": [""],
             "age": "",
             "birthday": "",
-            "marital status": "",
+            "marital_status": "",
             "religion": "",
             "residential_city": "",
             "job_search_status": "",

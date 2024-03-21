@@ -47,6 +47,14 @@ func CallGemini(ocrCv, profileCv, key string) string {
 		fmt.Println("call gemini error:", err)
 	}
 	candidates := resp.Candidates
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered from panic:", r)
+		}
+	}()
+	if resp == nil || len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
+		return ""
+	}
 	part := candidates[0].Content.Parts[0]
 	return fmt.Sprintf("%s", part)
 }
