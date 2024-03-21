@@ -34,8 +34,7 @@ func main() {
 		}
 	}()
 	// 指定要消费的主题
-	topic := "glins_js_analysis" //pre env
-	//topic := "go-profile-merge"
+	topic := "go-profile-merge"
 	// 指定要消费的分区，这里为空表示消费所有分区
 	partitionList, err := consumer.Partitions(topic)
 	if err != nil {
