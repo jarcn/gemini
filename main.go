@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"gemini/cache"
 	"gemini/db"
+	"gemini/store"
+	"gemini/tasks"
 	"github.com/Shopify/sarama"
 	"os"
 	"os/signal"
@@ -71,31 +73,28 @@ func main() {
 }
 
 func doMerge(msg []byte) {
-	key := cache.GetKey()
-	fmt.Println("use gemini key:", key)
 	data := make(map[string]interface{})
 	err := json.Unmarshal(msg, &data)
 	if err != nil {
 		fmt.Println("Error decoding JSON:", err)
 		return
 	}
-	extend, ok := data["extend"].(string)
-	if !ok {
-		fmt.Println("Name field not found or not a string")
-	} else {
-		fmt.Println("extend:", extend)
+	key := cache.GetKey()
+	profile, _ := data["profile"].(string)
+	url, _ := data["url"].(string)
+	result := store.GeminiResult{
+		GeminiKey:   key,
+		ProfileData: "",
+		CVURL:       url,
+		CVData:      profile,
 	}
-	profile, ok := data["profile"].(string)
-	if !ok {
-		fmt.Println("Name field not found or not a string")
-	} else {
-		fmt.Println("profile :", profile)
+	id, err := result.Create(db.Client())
+	if err != nil {
+		fmt.Println("insert data error:", err)
+		return
 	}
-	url, ok := data["url"].(string)
-	if !ok {
-		fmt.Println("Name field not found or not a string")
-	} else {
-		fmt.Println("pdf url:", url)
-	}
-
+	step1 := tasks.CallGemini(profile, "", key)
+	result.GeminiStep1 = step1
+	result.ID = id
+	result.Update(db.Client())
 }
