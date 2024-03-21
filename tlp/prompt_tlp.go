@@ -82,12 +82,8 @@ Extract key fields from the input CV or Profile within the specified range; the 
         {
             "name": "",
             "gender": "",
-            "phone": [
-                ""
-            ],
-            "email": [
-                ""
-            ],
+            "phone": [""],
+            "email": [""],
             "age": "",
             "birthday": "",
             "marital status": "",
@@ -104,12 +100,8 @@ Extract key fields from the input CV or Profile within the specified range; the 
     ],
     "CONTACT_INFORMATION": [
         {
-            "phone": [
-                ""
-            ],
-            "email": [
-                ""
-            ],
+            "phone": [""],
+            "email": [""],
             "social_network": [
                 {
                     "name": "",

@@ -14,16 +14,16 @@ import (
 )
 
 func init() {
-	db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
-	//db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
+	//db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
+	db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
 	cache.InitKeyCache()
 }
 
 func main() {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = false
-	consumer, err := sarama.NewConsumer([]string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"}, config) //生产环境
-	//consumer, err := sarama.NewConsumer([]string{"10.129.0.78:9092", "10.129.0.180:9092", "10.129.0.85:9092"}, config) //预发环境
+	//consumer, err := sarama.NewConsumer([]string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"}, config) //生产环境
+	consumer, err := sarama.NewConsumer([]string{"10.129.0.78:9092", "10.129.0.180:9092", "10.129.0.85:9092"}, config) //预发环境
 	if err != nil {
 		fmt.Println("Error creating consumer:", err)
 		return
@@ -34,7 +34,8 @@ func main() {
 		}
 	}()
 	// 指定要消费的主题
-	topic := "go-profile-merge"
+	topic := "glins_js_analysis" //pre env
+	//topic := "go-profile-merge"
 	// 指定要消费的分区，这里为空表示消费所有分区
 	partitionList, err := consumer.Partitions(topic)
 	if err != nil {
@@ -45,7 +46,7 @@ func main() {
 	wg.Add(len(partitionList))
 	// 遍历每个分区创建消费者
 	for _, partition := range partitionList {
-		partitionConsumer, err := consumer.ConsumePartition(topic, partition, sarama.OffsetNewest)
+		partitionConsumer, err := consumer.ConsumePartition(topic, partition, sarama.OffsetOldest)
 		if err != nil {
 			fmt.Printf("Error creating partition consumer for partition %d: %v", partition, err)
 			continue

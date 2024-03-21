@@ -44,7 +44,7 @@ func CallGemini(ocrCv, profileCv, key string) string {
 	content := parseContent(ocrCv, profileCv)
 	resp, err := model.GenerateContent(ctx, genai.Text(content))
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("call gemini error:", err)
 	}
 	candidates := resp.Candidates
 	part := candidates[0].Content.Parts[0]
