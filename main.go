@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"gemini/cache"
 	"gemini/db"
@@ -14,64 +15,79 @@ import (
 )
 
 func init() {
-	db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
-	//db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
+	//db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
+	db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
 	cache.InitKeyCache()
 }
 
+var brokers = []string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"} // Kafka brokers 地址
+var topic = "go-profile-merge"                                                       // 要消费的主题
+var consumerGroup = "gemini-merge-group"
+
 func main() {
-	config := sarama.NewConfig()
-	config.Consumer.Return.Errors = false
-	consumer, err := sarama.NewConsumer([]string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"}, config) //生产环境
-	//consumer, err := sarama.NewConsumer([]string{"10.129.0.78:9092", "10.129.0.180:9092", "10.129.0.85:9092"}, config) //预发环境
+	config := sarama.NewConfig()                                                  // 创建 Kafka 消费者配置
+	config.Consumer.Group.Rebalance.Strategy = sarama.BalanceStrategyRange        // 使用Range重新平衡策略
+	consumerGroup, err := sarama.NewConsumerGroup(brokers, consumerGroup, config) // 创建消费者组
 	if err != nil {
-		fmt.Println("Error creating consumer:", err)
+		fmt.Println("Error creating consumer group:", err)
 		return
 	}
 	defer func() {
-		if err := consumer.Close(); err != nil {
-			fmt.Println("Error closing consumer:", err)
+		if err := consumerGroup.Close(); err != nil {
+			fmt.Println("Error closing consumer group:", err)
 		}
 	}()
-	// 指定要消费的主题
-	topic := "go-profile-merge"
-	// 指定要消费的分区，这里为空表示消费所有分区
-	partitionList, err := consumer.Partitions(topic)
-	if err != nil {
-		fmt.Println("Error retrieving partition list:", err)
-		return
-	}
-	var wg sync.WaitGroup
-	wg.Add(len(partitionList))
-	// 遍历每个分区创建消费者
-	for _, partition := range partitionList {
-		partitionConsumer, err := consumer.ConsumePartition(topic, partition, sarama.OffsetOldest)
-		if err != nil {
-			fmt.Printf("Error creating partition consumer for partition %d: %v", partition, err)
-			continue
-		}
-		// 异步处理每个分区的消息
-		go func(pc sarama.PartitionConsumer) {
-			defer wg.Done()
-			for {
-				select {
-				case msg := <-pc.Messages():
-					fmt.Printf("partition num %d start merge ...\r\n", msg.Partition)
-					tasks.DoMerge(msg.Value, getKey())
-					fmt.Printf("partition num %d end merge \r\n", msg.Partition)
-				case err := <-pc.Errors():
-					fmt.Println("Error:", err)
-				}
+	handler := &ConsumerGroupHandler{}                      // 处理函数
+	ctx, cancel := context.WithCancel(context.Background()) // 开始消费消息
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			if err := consumerGroup.Consume(ctx, []string{topic}, handler); err != nil {
+				fmt.Println("Error from consumer:", err)
+				cancel()
+				return
 			}
-		}(partitionConsumer)
-	}
-	// 等待信号以优雅地关闭消费者
+			if ctx.Err() != nil {
+				return
+			}
+		}
+	}()
+	// 等待中断信号以优雅地关闭消费者
 	sigterm := make(chan os.Signal, 1)
 	signal.Notify(sigterm, os.Interrupt)
 	<-sigterm
-	fmt.Println("Interrupt received, shutting down consumer...")
+	fmt.Println("Interrupt received, shutting down consumer group...")
+	cancel()
 	wg.Wait()
-	fmt.Println("Consumer shutdown complete.")
+	fmt.Println("Consumer group shutdown complete.")
+}
+
+// ConsumerGroupHandler 实现了sarama.ConsumerGroupHandler接口
+type ConsumerGroupHandler struct{}
+
+// 在消费者组开始消费前调用，用于初始化
+func (ConsumerGroupHandler) Setup(sarama.ConsumerGroupSession) error { return nil }
+
+// 在消费者组停止消费后调用，用于清理
+func (ConsumerGroupHandler) Cleanup(sarama.ConsumerGroupSession) error { return nil }
+
+// 将消息传递给处理程序处理
+func (h *ConsumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
+	for message := range claim.Messages() {
+		if h.ProcessMessage(message) { //消息处理
+			session.MarkMessage(message, "") // 提交消息的消费确认信息
+		} else {
+			fmt.Println("Message processing failed.") // 处理失败，不提交确认信息
+		}
+	}
+	return nil
+}
+
+func (h *ConsumerGroupHandler) ProcessMessage(message *sarama.ConsumerMessage) bool {
+	fmt.Printf("Message claimed: partition = %d, offset = %d, topic = %s\n", message.Partition, message.Offset, message.Topic)
+	return tasks.DoMerge(message.Value, getKey())
 }
 
 func getKey() string {
