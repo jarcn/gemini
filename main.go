@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"gemini/cache"
 	"gemini/db"
@@ -10,8 +9,8 @@ import (
 	"github.com/Shopify/sarama"
 	"os"
 	"os/signal"
-	"strings"
 	"sync"
+	"time"
 )
 
 func init() {
@@ -57,9 +56,9 @@ func main() {
 			for {
 				select {
 				case msg := <-pc.Messages():
-					fmt.Println("start merge ...")
-					doMerge(msg.Value)
-					fmt.Println("end merge")
+					fmt.Printf("partition num %d start merge ...\r\n", msg.Partition)
+					tasks.DoMerge(msg.Value, getKey())
+					fmt.Printf("partition num %d end merge \r\n", msg.Partition)
 				case err := <-pc.Errors():
 					fmt.Println("Error:", err)
 				}
@@ -75,40 +74,19 @@ func main() {
 	fmt.Println("Consumer shutdown complete.")
 }
 
-func doMerge(msg []byte) {
-	data := make(map[string]interface{})
-	err := json.Unmarshal(msg, &data)
-	if err != nil {
-		fmt.Println("Error decoding JSON:", err)
-		return
-	}
+func getKey() string {
 	key := cache.GetKey()
-	profile, _ := data["profile"].(string)
-	url, _ := data["url"].(string)
-	result := store.GeminiResult{
-		GeminiKey:   key,
-		ProfileData: profile,
-		CVURL:       url,
-		CVData:      profile,
-	}
-	id, err := result.Create(db.Client())
+	result := store.GeminiResult{}
+	count, err := result.CountByKey(db.Client(), key)
 	if err != nil {
-		fmt.Println("insert data error:", err)
-		return
+		return cache.GetKey()
 	}
-	step1 := tasks.CallGemini(profile, profile, key)
-	jsonResult := getJSON(step1)
-	result.GeminiStep1 = jsonResult
-	result.ID = id
-	result.Update(db.Client())
-	fmt.Println("save gemini result", jsonResult)
-}
-
-func getJSON(s string) string {
-	start := strings.Index(s, "{")
-	end := strings.LastIndex(s, "}")
-	if start == -1 || end == -1 || start >= end {
-		return ""
+	if count == 0 {
+		return key
 	}
-	return s[start : end+1]
+	currentTime := time.Now().Unix()
+	if currentTime-count > 60 {
+		return key
+	}
+	return cache.GetKey()
 }

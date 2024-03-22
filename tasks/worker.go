@@ -3,13 +3,58 @@ package tasks
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"gemini/db"
+	"gemini/store"
 	"gemini/tpl"
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
 	"log"
+	"strings"
 	"text/template"
 )
+
+func DoMerge(msg []byte, key string) bool {
+	data := make(map[string]interface{})
+	err := json.Unmarshal(msg, &data)
+	if err != nil {
+		fmt.Println("Error decoding JSON:", err)
+		return true
+	}
+	profile, _ := data["profile"].(string)
+	url, _ := data["url"].(string)
+	result := store.GeminiResult{
+		GeminiKey:   key,
+		ProfileData: profile,
+		CVURL:       url,
+		CVData:      profile,
+	}
+	id, err := result.Create(db.Client())
+	if err != nil {
+		fmt.Println("insert data error:", err)
+		return false
+	}
+	step1 := CallGemini(profile, profile, key)
+	if step1 == "" {
+		return false
+	}
+	jsonResult := getJSON(step1)
+	result.GeminiStep1 = jsonResult
+	result.ID = id
+	err = result.Update(db.Client())
+	fmt.Println("update gemini result", jsonResult)
+	return err == nil
+}
+
+func getJSON(s string) string {
+	start := strings.Index(s, "{")
+	end := strings.LastIndex(s, "}")
+	if start == -1 || end == -1 || start >= end {
+		return ""
+	}
+	return s[start : end+1]
+}
 
 func CallGemini(ocrCv, profileCv, key string) string {
 	ctx := context.Background()
@@ -19,7 +64,6 @@ func CallGemini(ocrCv, profileCv, key string) string {
 	}
 	defer client.Close()
 	model := client.GenerativeModel("gemini-1.0-pro")
-	//model := client.GenerativeModel("gemini-1.5-pro-latest")
 	model.SetTemperature(0.9)
 	model.SetTopK(1)
 	model.SetTopP(1)
@@ -46,6 +90,7 @@ func CallGemini(ocrCv, profileCv, key string) string {
 	resp, err := model.GenerateContent(ctx, genai.Text(content))
 	if err != nil {
 		fmt.Println("call gemini error:", err)
+		return ""
 	}
 	candidates := resp.Candidates
 	defer func() {
