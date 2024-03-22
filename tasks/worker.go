@@ -19,6 +19,7 @@ func CallGemini(ocrCv, profileCv, key string) string {
 	}
 	defer client.Close()
 	model := client.GenerativeModel("gemini-1.0-pro")
+	//model := client.GenerativeModel("gemini-1.5-pro-latest")
 	model.SetTemperature(0.9)
 	model.SetTopK(1)
 	model.SetTopP(1)
