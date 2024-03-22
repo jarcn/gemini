@@ -64,7 +64,7 @@ func main() {
 	fmt.Println("Consumer group shutdown complete.")
 }
 
-// ConsumerGroupHandler 实现了sarama.ConsumerGroupHandler接口
+// 实现了sarama.ConsumerGroupHandler接口
 type ConsumerGroupHandler struct{}
 
 // 在消费者组开始消费前调用，用于初始化
