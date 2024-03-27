@@ -26,16 +26,21 @@ func DoMerge(msg []byte, key string) bool {
 	url, _ := data["url"].(string)
 	result := store.GeminiResult{
 		GeminiKey:   key,
-		ProfileData: profile,
+		ProfileData: "",
 		CVURL:       url,
 		CVData:      profile,
+	}
+	exists, err := result.CvExists(db.Client(), url)
+	if exists {
+		fmt.Println("cv url has exists")
+		return true
 	}
 	id, err := result.Create(db.Client())
 	if err != nil {
 		fmt.Println("insert data error:", err)
 		return false
 	}
-	step1 := CallGemini(profile, profile, key)
+	step1 := CallGemini(profile, "", key)
 	if step1 == "" {
 		return false
 	}

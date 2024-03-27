@@ -56,6 +56,20 @@ func (gr *GeminiResult) CountByKey(db *sqlx.DB, key string) (int64, error) {
 	}
 }
 
+func (gr *GeminiResult) CvExists(db *sqlx.DB, cvUrl string) (bool, error) {
+	countSql := ` select * from qiyee_job_data.tbl_gemini_result where cv_url = ?`
+	var result []GeminiResult
+	err := db.Select(&result, countSql, cvUrl)
+	if err != nil {
+		return false, err
+	}
+	if len(result) >= 1 {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
 func (gr *GeminiResult) Update(db *sqlx.DB) error {
 	currentTime := time.Now().Unix()
 	updateQuery := `UPDATE tbl_gemini_result
