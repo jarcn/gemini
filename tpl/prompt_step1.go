@@ -83,7 +83,7 @@ The degree information must be presented using the exact keywords as the origina
   },
   "work_experience": [
     {
-      "company_name1": "",
+      "company_name": "",
       "position_info": [
         {
           "job_title": "",
@@ -99,7 +99,7 @@ The degree information must be presented using the exact keywords as the origina
       ]
     },
     {
-      "company_name2": "",
+      "company_name": "",
       "position_info": [
         {
           "job_title": "",
@@ -115,7 +115,7 @@ The degree information must be presented using the exact keywords as the origina
       ]
     },
     {
-      "company_name100": "",
+      "company_name": "",
       "position_info": [
         {
           "job_title": "",
@@ -133,19 +133,19 @@ The degree information must be presented using the exact keywords as the origina
   ],
   "education": [
     {
-      "school1": "",
+      "school": "",
       "degree": "",
       "major": "",
       "duration": ""
     },
     {
-      "school2": "",
+      "school": "",
       "degree": "",
       "major": "",
       "duration": ""
     },
     {
-      "school100": "",
+      "school": "",
       "degree": "",
       "major": "",
       "duration": ""

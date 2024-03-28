@@ -84,3 +84,10 @@ func (gr *GeminiResult) Delete(db *sqlx.DB) error {
 	_, err := db.Exec(deleteQuery, gr.ID)
 	return err
 }
+
+func (gr *GeminiResult) FindAll(db *sqlx.DB) ([]GeminiResult, error) {
+	findAll := `select distinct(cv_url),gemini_step1_result,id from qiyee_job_data.tbl_gemini_result where gemini_step1_result !=""`
+	var result []GeminiResult
+	err := db.Select(&result, findAll)
+	return result, err
+}

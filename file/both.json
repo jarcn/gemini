@@ -1,169 +1,108 @@
 {
-  "BASIC_INFORMATION": [
-    {
-      "name": "Fiolita Salim Pranata",
-      "gender": "Female",
-      "phone": [
-        "+6582809167"
-      ],
-      "email": [
-        "fiolita93@gmail.com"
-      ],
-      "age": 20,
-      "birthday": "2002-06-06",
-      "marital_status": "Unknown",
-      "religion": "Unknown",
-      "residential_city": "Tangerang, Indonesia",
-      "job_search_status": "Actively Looking for Job",
-      "perfer_work_city": "Unknown",
-      "perfer_position": "Unknown",
-      "expect_salary": {
-        "min": null,
-        "max": 5000000
-      }
+  "basic_information": {
+    "name": "Rostiana Gunawan",
+    "gender": "Unknown",
+    "age": "Unknown",
+    "birthday": "Unknown",
+    "marital_status": "Unknown",
+    "religion": "Unknown",
+    "residential_city": "Tangerang",
+    "job_search_status": "Unknown",
+    "perfer_work_city": "Unknown",
+    "perfer_position": "Unknown",
+    "expect_salary": {
+      "min": "Unknown",
+      "max": "Unknown"
     }
-  ],
-  "CONTACT_INFORMATION": [
+  },
+  "contact_information": {
+    "phone": [
+      "+62 857 1728 3399"
+    ],
+    "email": [
+      "ngrstiana@gmail.com"
+    ],
+    "social_network": []
+  },
+  "sef_introduction": {
+    "desc": "I am an experienced copywriter working in the digital advertising industry."
+  },
+  "work_experience": [
     {
-      "phone": [
-        "+6582809167"
-      ],
-      "email": [
-        "fiolita93@gmail.com"
-      ],
-      "social_network": [
-        {
-          "name": "LinkedIn",
-          "url": "https://www.linkedin.com/in/fiolitasalimpranata"
-        }
-      ]
-    }
-  ],
-  "SELF_INTRODUCTION": [
-
-  ],
-  "WORK_EXPERIENCE": [
-    {
-      "company_name": "PERMIT Beijing",
+      "company_name1": "Credible",
       "position_info": [
         {
-          "job_title": "Member of the Entrepreneurship Division",
-          "duration": "Sep 2021 - Jul 2022",
-          "responsibilities": {
-            "1": "Connected the organization with more than 10 sponsors.",
-            "2": "Developed financing ideas for more than 10 events.",
-            "3": "Structured 5 events.",
-            "4": "Contacted more than 50 people and companies to work together with the organization."
-          }
+          "job_title": "Content Writer",
+          "duration": "February 2022 - Present",
+          "responsibilities": [
+            "Responsible to write clear and compelling copy to describe products for various platforms and communication channels"
+          ]
         }
       ]
     },
     {
-      "company_name": "上海肯斯爪特科技有限公",
+      "company_name2": "Growmint Digital Agency",
       "position_info": [
         {
-          "job_title": "Member of the KOL Division",
-          "duration": "Mar 2022 - May 2022",
-          "responsibilities": {
-            "1": "Doing research on future KOLs across Indonesia’s TikTok platform.",
-            "2": "Maintaining relationships with more than 10 influencers.",
-            "3": "Daily report of the progress to the team and daily check of the KOL’s tasks.",
-            "4": "Maintaining a good communication with the KOLs and my supervisor.",
-            "5": "Translating the KOL’s video from Chinese to Bahasa Indonesia.",
-            "6": "Regularly update the Google Sheets about the progress made."
-          }
+          "job_title": "Content Specialist",
+          "duration": "August 2020 - October 2021",
+          "responsibilities": [
+            "Responsible for the production and management of content for digital platforms"
+          ]
         }
       ]
     },
     {
-      "company_name": "Yummy Corp",
+      "company_name3": "Superfox Saga",
       "position_info": [
         {
-          "job_title": "Member of the Partner Success Team",
-          "duration": "Jan 2022 - Mar 2022",
-          "responsibilities": {
-            "1": "Assisting the account managers in managing daily tasks.",
-            "2": "Maintaining good communication with the account managers in informing the tasks.",
-            "3": "Giving daily information to the account managers about the brand partners.",
-            "4": "Engaging with several teams in checking daily tasks.",
-            "5": "Solving problems and informing the account managers.",
-            "6": "Working as a team along with other team members."
-          }
-        }
-      ]
-    },
-    {
-      "company_name": "Student Council",
-      "position_info": [
-        {
-          "job_title": "Coordinator of the Sponsorship Team",
-          "duration": "2019 - 2020",
-          "responsibilities": {
-            "1": "Persuade more than 50 companies to sponsor the event.",
-            "2": "Negotiate with more than 30 companies in financing the events.",
-            "3": "Interact and build relationships with companies.",
-            "4": "Coordinate the team members.",
-            "5": "Managed the budgeting of the event.",
-            "6": "Spreading proposals to companies.",
-            "7": "Searched for a way to promote the school’s event and earn funds."
-          }
-        }
-      ]
-    },
-    {
-      "company_name": "Student Council",
-      "position_info": [
-        {
-          "job_title": "Member of the Public Relation Team",
-          "duration": "2018 - 2019",
-          "responsibilities": {
-            "1": "Connects the student with the school.",
-            "2": "Spread information to the students through school announcements and social media.",
-            "3": "Speaking in front of the public.",
-            "4": "Contact and manage relationships with people to participate in the event."
-          }
+          "job_title": "Social Media Content & Copywriter",
+          "duration": "May 2019 - August 2020",
+          "responsibilities": [
+            "Developed editorial content plan",
+            "Managed brands' social media accounts"
+          ]
         }
       ]
     }
   ],
-  "EDUCATION": [
+  "education": [
     {
-      "school": "Singapore Institute of Management",
-      "degree": "Diploma in Management Studies",
-      "major": "Unknown",
-      "duration": "2022 - Present"
-    },
-    {
-      "school": "University of International Business and Economics",
-      "degree": "International Business",
-      "major": "Business Management",
-      "duration": "2020 - 2022"
-    },
-    {
-      "school": "Harapan Bangsar School",
-      "degree": "Unknown",
-      "major": "Science Major",
-      "duration": "2017 - 2020"
+      "school1": "University of Padjajaran",
+      "degree": "Bachelor of Arts, Major in French Literature",
+      "major": "French Literature",
+      "duration": "Graduated in May 2017"
     }
   ],
-  "LANGUAGE": [
+  "language": [],
+  "skills": [
     {
-      "Language": "Bahasa Indonesia",
-      "Proficiency": "Native"
+      "skill": "Copywriting",
+      "proficiency": "Unknown"
     },
     {
-      "Language": "English",
-      "Proficiency": "IELTS 6.5"
+      "skill": "Creative Writing",
+      "proficiency": "Unknown"
     },
     {
-      "Language": "Chinese",
-      "Proficiency": "HSK 4"
+      "skill": "Proofreading",
+      "proficiency": "Unknown"
+    },
+    {
+      "skill": "Storytelling",
+      "proficiency": "Unknown"
+    },
+    {
+      "skill": "Translation",
+      "proficiency": "Unknown"
     }
   ],
-  "SKILL": [
-
-  ],
-  "CERTIFICATIONS": [
-
+  "certifications": [
+    {
+      "certifications": "DELF B1 - Institut Francais d'Indonesie"
+    },
+    {
+      "certifications": "TOEFL (Score 553) - The TOEFL® Test"
+    }
   ]
 }

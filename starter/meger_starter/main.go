@@ -7,7 +7,7 @@ import (
 	"gemini/db"
 	"gemini/store"
 	"gemini/tasks"
-	"github.com/Shopify/sarama"
+	"github.com/IBM/sarama"
 	"os"
 	"os/signal"
 	"sync"
@@ -15,14 +15,14 @@ import (
 )
 
 func init() {
-	db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
-	//db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
+	//db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
+	db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
 	cache.InitKeyCache()
 }
 
-var brokers = []string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"} // 生产环境
-// var brokers = []string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"} // 预发环境
-var topic = "go-profile-merge" // 要消费的主题
+// var brokers = []string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"} // 生产环境
+var brokers = []string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"} // 预发环境
+var topic = "go-profile-merge"                                                       // 要消费的主题
 var consumerGroup = "gemini-merge-group"
 
 func main() {
