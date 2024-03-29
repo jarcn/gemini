@@ -15,44 +15,38 @@ import (
 	"text/template"
 )
 
-func DoMerge(msg []byte, key string) bool {
-	data := make(map[string]interface{})
+func DoDeduce(msg []byte, key string) bool {
+	data := make(map[string]int64)
 	err := json.Unmarshal(msg, &data)
 	if err != nil {
 		fmt.Println("Error decoding JSON:", err)
 		return true
 	}
-	profile, _ := data["profile"].(string)
-	url, _ := data["url"].(string)
-	result := store.GeminiResult{
-		GeminiKey:   key,
-		ProfileData: "",
-		CVURL:       url,
-		CVData:      profile,
+	id, _ := data["id"]
+	result := &store.GeminiResult{
+		GeminiKey: key,
 	}
-	exists, err := result.CvExists(db.Client(), url)
-	if exists {
-		fmt.Println("cv url has exists")
+	result, err = result.QueryById(db.Client(), id)
+	if err != nil {
+		fmt.Printf("query step1 result error:%s\r\n", err)
+	}
+	if result.GeminiStep1 == "" {
+		fmt.Printf("id: %d not have step1 result\r\n", id)
 		return true
 	}
-	id, err := result.Create(db.Client())
-	if err != nil {
-		fmt.Println("insert data error:", err)
+	step2 := geminiStep2Deduce(result.GeminiStep1, key)
+	if step2 == "" {
 		return false
 	}
-	step1 := CallGemini(profile, "", key)
-	if step1 == "" {
-		return false
-	}
-	jsonResult := getJSON(step1)
+	jsonResult := step2ResultToJson(step2)
 	result.GeminiStep1 = jsonResult
 	result.ID = id
-	err = result.Update(db.Client())
-	fmt.Println("update gemini result", jsonResult)
+	err = result.Step2Update(db.Client())
+	fmt.Println("update gemini step2 result", jsonResult)
 	return err == nil
 }
 
-func getJSON(s string) string {
+func step2ResultToJson(s string) string {
 	start := strings.Index(s, "{")
 	end := strings.LastIndex(s, "}")
 	if start == -1 || end == -1 || start >= end {
@@ -61,7 +55,7 @@ func getJSON(s string) string {
 	return s[start : end+1]
 }
 
-func CallGemini(ocrCv, profileCv, key string) string {
+func geminiStep2Deduce(step1Result, key string) string {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, option.WithAPIKey(key))
 	if err != nil {
@@ -91,7 +85,7 @@ func CallGemini(ocrCv, profileCv, key string) string {
 			Threshold: genai.HarmBlockMediumAndAbove,
 		},
 	}
-	content := parseContent(ocrCv, profileCv)
+	content := step2ContentBuilder(step1Result)
 	resp, err := model.GenerateContent(ctx, genai.Text(content))
 	if err != nil {
 		fmt.Println("call gemini error:", err)
@@ -103,6 +97,7 @@ func CallGemini(ocrCv, profileCv, key string) string {
 			fmt.Println("Recovered from panic:", r)
 		}
 		errorMsg, _ := json.Marshal(resp)
+		fmt.Println("step2 call gemini response:", string(errorMsg))
 		return string(errorMsg)
 	}()
 	if resp == nil || len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
@@ -112,12 +107,12 @@ func CallGemini(ocrCv, profileCv, key string) string {
 	return fmt.Sprintf("%s", part)
 }
 
-func parseContent(ocrCv, profileCv string) string {
-	temple, err := template.New("gemini").Parse(tpl.STEP1)
+func step2ContentBuilder(step1Result string) string {
+	temple, err := template.New("gemini-step2").Parse(tpl.STEP2)
 	if err != nil {
 		panic(err)
 	}
-	data := Data{OcrCV: ocrCv, ProfileCV: profileCv}
+	data := Step1Result{Step1Result: step1Result}
 	var buf bytes.Buffer
 	err = temple.Execute(&buf, data)
 	if err != nil {
@@ -126,7 +121,6 @@ func parseContent(ocrCv, profileCv string) string {
 	return buf.String()
 }
 
-type Data struct {
-	OcrCV     string
-	ProfileCV string
+type Step1Result struct {
+	Step1Result string
 }

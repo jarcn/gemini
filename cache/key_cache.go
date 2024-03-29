@@ -21,7 +21,7 @@ func InitKeyCache() {
 }
 
 func GetKey() string {
-	rand.Seed(time.Now().UnixNano())
+	rand.NewSource(time.Now().UnixNano())
 	randomIndex := rand.Intn(len(KeyCache))
 	return KeyCache[randomIndex]
 }
