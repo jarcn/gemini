@@ -26,7 +26,7 @@ When multiple data in CV or Profile mention the same field information: if there
 >> Social Media: Allow multiple social media IDs or addresses, but specify the social media name;
 >> Self-Introduction: Only allow one self-introduction; if there are multiple paragraphs, summarize in first-person within 200 words, clear and logical without errors;
 >> Work Experience: Allow multiple work experiences, arranged in reverse chronological order; for the same work experience with related job descriptions in both CV and Profile, summarize in first-person within 200 words, clear and logical without errors;
->> Education: Allow multiple educational experiences, displayed from highest to lowest degree; If the input text contains information about educational qualifications, the words relating to the level of education must be placed in the "degree" field.
+>> Education: Allow multiple educational experiences, displayed from highest to lowest degree; If the input text contains information about educational qualifications, the words relating to the level of education must be placed in the "degree" field. 
 >> Language Proficiency: Allow multiple language proficiencies, displayed from highest to lowest level;
 >> Certificates: Allow multiple certificates;
 ####Constraints:
@@ -50,7 +50,8 @@ The degree information must be presented using the exact keywords as the origina
 #Output
 -Use "unknown" to represent unknown information;
 -All output content must be in English, no Chinese or Indonesian allowed
--Strictly adhere to standard JSON format for output, refer to field names and format below::
+-All time outputs must be based on the original text. If the original text mentions the year and month, then display as: YYYY-MM. If the original text mentions only the year, then display as YYYY.  If it is a time range, please add the word "to" between the start and end dates, as in: YYYY-MM to YYYY-MM or YYYY to YYYY. When the end time is "Now", it should uniformly be displayed as "Present".
+-Strictly adhere to standard JSON format for output, refer to field names and format below:
 {
   "basic_information": {
     "name": "",
