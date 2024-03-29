@@ -98,10 +98,12 @@ func CallGemini(ocrCv, profileCv, key string) string {
 		return ""
 	}
 	candidates := resp.Candidates
-	defer func() {
+	defer func() string {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered from panic:", r)
 		}
+		errorMsg, _ := json.Marshal(resp)
+		return string(errorMsg)
 	}()
 	if resp == nil || len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
 		return ""
