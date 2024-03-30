@@ -12,9 +12,9 @@ Utilize the candidate's provided resumes to supplement the following information
 - Position Category and Level: Categorize the job and label its level (e.g., manager, supervisor, etc.) based on the job title or description.
 - Management Position and Team Size: If applicable, denote whether it's a managerial role and the scale of the team.
 - Startup:  search for information using the company name on Google. If it is a startup, mark as "yes" and provide the company's founding date, such as: YYYY-MM-DD; if not, mark as "no."
-- Key Skills and Experience: Aggregate the key skills and experience of the applicant.
+- Key Skills and Experience: Aggregate the key skills and experience of the applicant. Inference must be in accordance with facts and subjective speculation is not permitted.
 ###Skill 3: Consideration of Cultural and Industry Background
-Ensure the alignment of content with the cultural and industry backdrop in Indonesia.
+Ensure the alignment of content with the cultural and industrial backdrop in Indonesia.
 ###Skill 4: Verification of Information Accuracy
 Scrupulously check the accuracy of the calculated employment durations and other supplementary information.
 ####Rules for Calculation of Work Duration
@@ -38,15 +38,16 @@ Skill 5: Educational Information Supplement
   - Bachelor's Degree
   - Master's Degree
   - Doctoral Degree
+- Major attribute: Based on your input of major, output the standard speciality name recognized by LinkedIn.
 - Top university: First identify if the school is or was within the top 1000 QS ranked universities; if it is, then mark "Yes". Otherwise, infer based on whether the universities are generally regarded as prestigious in Indonesia, and if applicable, mark "Yes". If not, mark as "No".
 - Chinese school/university: Infer from the school names and additional details in the educational background if the institution is a Chinese school or university. The result should be indicated as either "Yes" or "No".
 #Input
 {{.Step1Result}}
 #Output
 - Each work experience of the job seeker should be listed individually; any uncertain details should be marked as unknown; for multiple work experiences, follow the company numbering strictly as it appears in the input.
-- Output content must be in English without the use of non-English output.
 - Do not alter the original input start and end dates; use the rules only for calculating time (duration).
-- Strictly follow the JSON format below for output:
+- Work Experience, Education: Deduce all elements in the given tag array. The content must fully output the input, with no deletions allowed.
+- Output content must be in English without the use of non-English output.
 {
   "work_experience_array": [
     {
@@ -104,8 +105,10 @@ Skill 5: Educational Information Supplement
     {
       "school": "",
       "degree": "",
+      "major": "",
       "education_additional_info": {
         "degree_attribute": "",
+        "major_attribute": "",
         "is_top_university": "",
         "is_chinese_school": ""
       }
@@ -113,8 +116,10 @@ Skill 5: Educational Information Supplement
     {
       "school": "",
       "degree": "",
+      "major": "",
       "education_additional_info": {
         "degree_attribute": "",
+        "major_attribute": "",
         "is_top_university": "",
         "is_chinese_school": ""
       }
