@@ -93,11 +93,11 @@ func geminiStep2Deduce(step1Result, key string) string {
 	}
 	candidates := resp.Candidates
 	defer func() string {
+		errorMsg, _ := json.Marshal(resp)
 		if r := recover(); r != nil {
 			fmt.Println("Recovered from panic:", r)
+			fmt.Println("step2 call gemini response:", string(errorMsg))
 		}
-		errorMsg, _ := json.Marshal(resp)
-		fmt.Println("step2 call gemini response:", string(errorMsg))
 		return string(errorMsg)
 	}()
 	if resp == nil || len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
