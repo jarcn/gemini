@@ -100,6 +100,13 @@ func (gr *GeminiResult) Step2Update(db *sqlx.DB) error {
 	return err
 }
 
+func (gr *GeminiResult) Step4Update(db *sqlx.DB) error {
+	currentTime := time.Now().Unix()
+	updateQuery := `UPDATE tbl_gemini_result SET gemini_step4_result=?, update_time=?, gemini_key=? WHERE id=?`
+	_, err := db.Exec(updateQuery, gr.GeminiStep4, currentTime, gr.GeminiKey, gr.ID)
+	return err
+}
+
 func (gr *GeminiResult) Delete(db *sqlx.DB) error {
 	deleteQuery := ` DELETE FROM tbl_gemini_result WHERE id=? `
 	_, err := db.Exec(deleteQuery, gr.ID)

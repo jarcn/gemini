@@ -32,9 +32,33 @@ type SocialNetwork struct {
 }
 
 type PositionInfo struct {
-	JobTitle         string   `json:"job_title"`
-	Duration         string   `json:"duration"`
-	Responsibilities []string `json:"responsibilities"`
+	JobTitle              string                `json:"job_title"`
+	Duration              string                `json:"duration"`
+	Responsibilities      []string              `json:"responsibilities"`
+	CompanyAdditionalInfo CompanyAdditionalInfo `json:"company_additional_info"`
+}
+
+type CompanyAdditionalInfo struct {
+	IndustryAttribute    string     `json:"industry_attribute"`
+	CompanyIntroduction  string     `json:"company_introduction"`
+	PositionCategory     string     `json:"position_category"`
+	PositionLevel        string     `json:"position_level"`
+	IsManagementPosition string     `json:"is_management_position"`
+	ManagementScope      string     `json:"management_scope"`
+	WorkPeriod           WorkPeriod `json:"work_period"`
+	Startup              Startup    `json:"startup"`
+	KeySkillsExperience  []string   `json:"key_skills_experience"`
+}
+
+type Startup struct {
+	IsStartup   string `json:"is_startup"`
+	CreatedTime string `json:"created_time"`
+}
+
+type WorkPeriod struct {
+	StartDate        string `json:"start_date"`
+	EndDate          string `json:"end_date"`
+	DurationInMonths int    `json:"duration_in_months"`
 }
 
 type WorkExperience struct {
@@ -43,10 +67,18 @@ type WorkExperience struct {
 }
 
 type Education struct {
-	School   string `json:"school"`
-	Degree   string `json:"degree"`
-	Major    string `json:"major"`
-	Duration string `json:"duration"`
+	School                  string                  `json:"school"`
+	Degree                  string                  `json:"degree"`
+	Major                   string                  `json:"major"`
+	Duration                string                  `json:"duration"`
+	EducationAdditionalInfo EducationAdditionalInfo `json:"edu_info_array"`
+}
+
+type EducationAdditionalInfo struct {
+	DegreeAttribute string `json:"degree_attribute"`
+	MajorAttribute  string `json:"major_attribute"`
+	IsTopUniversity string `json:"is_top_university"`
+	IsChineseSchool string `json:"is_chinese_school"`
 }
 
 type Language struct {

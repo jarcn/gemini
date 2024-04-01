@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"gemini/cache"
 	"gemini/db"
-	"gemini/store"
 	"gemini/tasks"
-	"time"
 )
 
 func init() {
@@ -17,7 +15,7 @@ func init() {
 }
 
 func main() {
-	var idMap = []int64{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 38,
+	var idMap = []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 38,
 		39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 55, 56, 57, 59, 60, 61, 64, 67, 68, 69, 70, 71, 72, 73, 74, 76, 78, 79, 80, 81, 82, 83, 84,
 		86, 87, 88, 89, 90, 93, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 115, 117, 118, 120, 122, 124, 125, 126,
 		127, 128, 129, 131, 134, 135, 136, 138, 139, 140, 141, 142, 144, 145, 146, 148, 149, 150, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161,
@@ -28,25 +26,7 @@ func main() {
 		m1 := make(map[string]int64)
 		m1["id"] = id
 		marshal, _ := json.Marshal(m1)
-		tasks.DoDeduce(marshal, getKey())
+		tasks.DoDeduce(marshal, cache.GetKey())
 		fmt.Printf("id:%d deduce done\r\n", id)
 	}
-}
-func getKey() string {
-	key := cache.GetKey()
-	result := store.GeminiResult{}
-	count, err := result.CountByKey(db.Client(), key)
-	if err != nil {
-		return cache.GetKey()
-	}
-	if count == 0 {
-		return key
-	}
-	currentTime := time.Now().Unix()
-	if currentTime-count > 60 {
-		return key
-	} else {
-		time.Sleep(time.Second * 60)
-	}
-	return cache.GetKey()
 }

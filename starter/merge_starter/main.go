@@ -5,13 +5,11 @@ import (
 	"fmt"
 	"gemini/cache"
 	"gemini/db"
-	"gemini/store"
 	"gemini/tasks"
 	"github.com/IBM/sarama"
 	"os"
 	"os/signal"
 	"sync"
-	"time"
 )
 
 func init() {
@@ -88,24 +86,5 @@ func (h *ConsumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession,
 
 func (h *ConsumerGroupHandler) ProcessMessage(message *sarama.ConsumerMessage) bool {
 	fmt.Printf("Message claimed: partition = %d, offset = %d, topic = %s\n", message.Partition, message.Offset, message.Topic)
-	return tasks.DoMerge(message.Value, getKey())
-}
-
-func getKey() string {
-	key := cache.GetKey()
-	result := store.GeminiResult{}
-	count, err := result.CountByKey(db.Client(), key)
-	if err != nil {
-		return cache.GetKey()
-	}
-	if count == 0 {
-		return key
-	}
-	currentTime := time.Now().Unix()
-	if currentTime-count > 60 {
-		return key
-	} else {
-		time.Sleep(time.Second * 60)
-	}
-	return cache.GetKey()
+	return tasks.DoMerge(message.Value, cache.GetKey())
 }
