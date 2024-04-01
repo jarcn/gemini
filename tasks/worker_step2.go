@@ -15,7 +15,7 @@ import (
 	"text/template"
 )
 
-func DoDeduce(msg []byte, key string) bool {
+func DoDeduce(msg []byte, key string, isCvData bool) bool {
 	data := make(map[string]int64)
 	err := json.Unmarshal(msg, &data)
 	if err != nil {
@@ -29,34 +29,42 @@ func DoDeduce(msg []byte, key string) bool {
 	result, err = result.QueryById(db.Client(), id)
 	if err != nil {
 		fmt.Printf("query step1 result error:%s\r\n", err)
-	}
-	//if result.GeminiStep1 == "" {
-	//	fmt.Printf("id: %d not have step1 result\r\n", id)
-	//	return true
-	//}
-	//if result.GeminiStep2 != "" {
-	//	fmt.Printf("id:%d step2 already deduce\r\n", id)
-	//	return true
-	//}
-	if result.CVData == "" {
-		fmt.Printf("id: %d not have cv data \r\n", id)
-		return true
-	}
-	if result.GeminiStep2 == "" {
-		fmt.Printf("id:%d not have step2 result deduce\r\n", id)
-		return true
-	}
-	//step2 := geminiStep2Deduce(result.GeminiStep2, key) //使用任务一的结构跑任务二
-	step2 := geminiStep2Deduce(result.CVData, key) //使用原始CV数据跑任务二
-	if step2 == "" {
 		return false
 	}
-	//step2Result := step2ResultToJson(step2)
-	//result.GeminiStep2 = step2Result
-	result.GeminiStep4 = step2
-	result.GeminiKey = key
-	err = result.Step4Update(db.Client())
-	fmt.Printf("update id: %d gemini step2 result:%s \r\n", id, step2)
+	if isCvData {
+		if result.CVData == "" {
+			fmt.Printf("id: %d not have cv data \r\n", id)
+			return true
+		}
+		if result.GeminiStep2 == "" {
+			fmt.Printf("id:%d not have step2 result deduce\r\n", id)
+			return true
+		}
+		step2ByCVData := geminiStep2Deduce(result.CVData, key) //使用原始CV数据跑任务二
+		if step2ByCVData == "" {
+			return false
+		}
+		step2Result := step2ResultToJson(step2ByCVData)
+		result.GeminiStep4 = step2Result
+		result.GeminiKey = key
+		err = result.Step4Update(db.Client())
+		fmt.Printf("update id: %d gemini step2 result:%s \r\n", id, step2ByCVData)
+	} else {
+		if result.GeminiStep1 == "" {
+			fmt.Printf("id: %d not have step1 result\r\n", id)
+			return true
+		}
+		//if result.GeminiStep2 != "" {
+		//	fmt.Printf("id:%d step2 already deduce\r\n", id)
+		//	return true
+		//}
+		step2ByStep1Data := geminiStep2Deduce(result.GeminiStep1, key) //使用任务一的结构跑任务二
+		step2Result := step2ResultToJson(step2ByStep1Data)
+		result.GeminiStep2 = step2Result
+		result.GeminiKey = key
+		err = result.Step2Update(db.Client())
+		fmt.Printf("update id: %d gemini step2 result:%s \r\n", id, step2ByStep1Data)
+	}
 	return err == nil
 }
 
@@ -119,7 +127,7 @@ func geminiStep2Deduce(step1Result, key string) string {
 		return ""
 	}
 	part := candidates[0].Content.Parts[0]
-	fmt.Printf("call step2 response data:%s\r\n", content)
+	fmt.Printf("call step2 response data:%s\r\n", part)
 	return fmt.Sprintf("%s", part)
 }
 
