@@ -38,11 +38,11 @@ func DoDeduce(msg []byte, key string) bool {
 	if step2 == "" {
 		return false
 	}
-	jsonResult := step2ResultToJson(step2)
-	result.GeminiStep1 = jsonResult
-	result.ID = id
+	step2Result := step2ResultToJson(step2)
+	result.GeminiStep2 = step2Result
+	result.GeminiKey = key
 	err = result.Step2Update(db.Client())
-	fmt.Println("update gemini step2 result", jsonResult)
+	fmt.Printf("update id: %d gemini step2 result:%s \r\n", id, step2Result)
 	return err == nil
 }
 
