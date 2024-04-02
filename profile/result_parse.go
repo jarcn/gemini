@@ -6,20 +6,27 @@ import (
 	"strconv"
 )
 
-// ParseStep2WorkExperienceArray 解析任务二工作经历Json结果
-func ParseStep2WorkExperienceArray(jsonData []byte) []CompanyAdditionalInfo {
-	var deduceWorkExpArr []CompanyAdditionalInfo
-
-	return deduceWorkExpArr
-}
-
-// ParseStep2EduInfoArray 解析任务二学历Json结果
-func ParseStep2EduInfoArray(jsonData []byte) []EducationAdditionalInfo {
-	return nil
+// ParseStep2JsonData 解析任务二工作经历Json结果
+func ParseStep2JsonData(jsonData []byte) ([]WorkExperienceArray, []EduInfoArray) {
+	var workExpDeduceArr []WorkExperienceArray
+	var eduInfoDeduceArr []EduInfoArray
+	jsonparser.ArrayEach(jsonData, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		var exp WorkExperienceArray
+		parseString, _ := jsonparser.ParseString(value)
+		json.Unmarshal([]byte(parseString), &exp)
+		workExpDeduceArr = append(workExpDeduceArr, exp)
+	}, "work_experience_array")
+	jsonparser.ArrayEach(jsonData, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		var edu EduInfoArray
+		parseString, _ := jsonparser.ParseString(value)
+		json.Unmarshal([]byte(parseString), &edu)
+		eduInfoDeduceArr = append(eduInfoDeduceArr, edu)
+	}, "edu_info_array")
+	return workExpDeduceArr, eduInfoDeduceArr
 }
 
 // ParseStep1JsonData 解析任务一Json结果
-func ParseStep1JsonData(jsonData []byte) Resume {
+func ParseStep1JsonData(jsonData []byte) *Resume {
 	basicInfo := parseBasicInfo(jsonData)
 	contactInfo := parseContactInformation(jsonData)
 	introduction := parseSefIntroduction(jsonData)
@@ -28,12 +35,12 @@ func ParseStep1JsonData(jsonData []byte) Resume {
 	languages := parseLanguage(jsonData)
 	skills := parseSkills(jsonData)
 	certs := parseCertifications(jsonData)
-	resume := Resume{
+	resume := &Resume{
 		BasicInformation:   basicInfo,
 		ContactInformation: contactInfo,
 		SefIntroduction:    introduction,
 		WorkExperience:     exp,
-		Education:          education,
+		Educations:         education,
 		Language:           languages,
 		Skills:             skills,
 		Certifications:     certs,
@@ -78,10 +85,9 @@ func parseLanguage(jsonData []byte) []Language {
 
 func parseEducation(jsonData []byte) []Education {
 	var educations []Education
-	index := 1
 	jsonparser.ArrayEach(jsonData, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		education := Education{}
-		school, _ := jsonparser.GetString(value, "school"+strconv.Itoa(index))
+		school, _ := jsonparser.GetString(value, "school")
 		degree, _ := jsonparser.GetString(value, "degree")
 		major, _ := jsonparser.GetString(value, "major")
 		duration, _ := jsonparser.GetString(value, "duration")
@@ -90,17 +96,15 @@ func parseEducation(jsonData []byte) []Education {
 		education.Major = major
 		education.Duration = duration
 		educations = append(educations, education)
-		index += 1
 	}, "education")
 	return educations
 }
 
 func parseWorkExp(jsonData []byte) []WorkExperience {
 	var experienceArr []WorkExperience
-	index := 1
 	jsonparser.ArrayEach(jsonData, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		var positionArr []PositionInfo
-		companyName, _ := jsonparser.GetString(value, "company_name"+strconv.Itoa(index))
+		companyName, _ := jsonparser.GetString(value, "company_name")
 		jsonparser.ArrayEach(value, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 			var positionInfo = PositionInfo{}
 			var responsibilities []string
@@ -125,7 +129,6 @@ func parseWorkExp(jsonData []byte) []WorkExperience {
 			PositionInfo: positionArr,
 		}
 		experienceArr = append(experienceArr, workExp)
-		index += 1
 	}, "work_experience")
 	return experienceArr
 }
@@ -149,7 +152,7 @@ func parseContactInformation(jsonData []byte) ContactInformation {
 		emailArr = append(emailArr, string(value))
 	}, "contact_information", "email")
 	jsonparser.ArrayEach(jsonData, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-		var data = SocialNetwork{}
+		var data SocialNetwork
 		json.Unmarshal(value, &data)
 		socialArr = append(socialArr, data)
 	}, "contact_information", "social_network")

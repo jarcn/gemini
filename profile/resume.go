@@ -38,16 +38,47 @@ type PositionInfo struct {
 	CompanyAdditionalInfo CompanyAdditionalInfo `json:"company_additional_info"`
 }
 
+// todo
 type CompanyAdditionalInfo struct {
-	IndustryAttribute    string     `json:"industry_attribute"`
-	CompanyIntroduction  string     `json:"company_introduction"`
-	PositionCategory     string     `json:"position_category"`
-	PositionLevel        string     `json:"position_level"`
-	IsManagementPosition string     `json:"is_management_position"`
-	ManagementScope      string     `json:"management_scope"`
-	WorkPeriod           WorkPeriod `json:"work_period"`
-	Startup              Startup    `json:"startup"`
-	KeySkillsExperience  []string   `json:"key_skills_experience"`
+	IndustryAttribute    IndustryAttribute    `json:"industry_attribute"`
+	CompanyIntroduction  CompanyIntroduction  `json:"company_introduction"`
+	PositionCategory     PositionCategory     `json:"position_category"`
+	PositionLevel        PositionLevel        `json:"position_level"`
+	IsManagementPosition IsManagementPosition `json:"is_management_position"`
+	ManagementScope      ManagementScope      `json:"management_scope"`
+	WorkPeriod           WorkPeriod           `json:"work_period"`
+	Startup              Startup              `json:"startup"`
+	KeySkillsExperience  []string             `json:"key_skills_experience"`
+}
+
+type IndustryAttribute struct {
+	Value  string `json:"value"`
+	Source string `json:"source"`
+}
+
+type CompanyIntroduction struct {
+	Value  string `json:"value"`
+	Source string `json:"source"`
+}
+
+type PositionCategory struct {
+	Value  string `json:"value"`
+	Source string `json:"source"`
+}
+
+type PositionLevel struct {
+	Value  string `json:"value"`
+	Source string `json:"source"`
+}
+
+type IsManagementPosition struct {
+	Value  string `json:"value"`
+	Source string `json:"source"`
+}
+
+type ManagementScope struct {
+	Value  string `json:"value"`
+	Source string `json:"source"`
 }
 
 type Startup struct {
@@ -75,10 +106,30 @@ type Education struct {
 }
 
 type EducationAdditionalInfo struct {
-	DegreeAttribute string `json:"degree_attribute"`
-	MajorAttribute  string `json:"major_attribute"`
-	IsTopUniversity string `json:"is_top_university"`
-	IsChineseSchool string `json:"is_chinese_school"`
+	DegreeAttribute DegreeAttribute `json:"degree_attribute"`
+	MajorAttribute  MajorAttribute  `json:"major_attribute"`
+	IsTopUniversity IsTopUniversity `json:"is_top_university"`
+	IsChineseSchool IsChineseSchool `json:"is_chinese_school"`
+}
+
+type DegreeAttribute struct {
+	Value  string `json:"value"`
+	Source string `json:"source"`
+}
+
+type MajorAttribute struct {
+	Value  string `json:"value"`
+	Source string `json:"source"`
+}
+
+type IsTopUniversity struct {
+	Value  string `json:"value"`
+	Source string `json:"source"`
+}
+
+type IsChineseSchool struct {
+	Value  string `json:"value"`
+	Source string `json:"source"`
 }
 
 type Language struct {
@@ -101,8 +152,22 @@ type Resume struct {
 	ContactInformation ContactInformation `json:"contact_information"`
 	SefIntroduction    SefIntroduction    `json:"sef_introduction"`
 	WorkExperience     []WorkExperience   `json:"work_experience"`
-	Education          []Education        `json:"education"`
+	Educations         []Education        `json:"education"`
 	Language           []Language         `json:"language"`
 	Skills             []Skill            `json:"skills"`
 	Certifications     []string           `json:"certifications"`
+}
+
+// step2 推导出的数据
+type WorkExperienceArray struct {
+	CompanyName           string                `json:"company_name"`
+	JobTitle              string                `json:"job_title"`
+	CompanyAdditionalInfo CompanyAdditionalInfo `json:"company_additional_info"`
+}
+
+type EduInfoArray struct {
+	School                  string                  `json:"school"`
+	Degree                  string                  `json:"degree"`
+	Major                   string                  `json:"major"`
+	EducationAdditionalInfo EducationAdditionalInfo `json:"education_additional_info"`
 }

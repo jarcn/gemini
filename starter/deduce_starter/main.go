@@ -26,7 +26,8 @@ func main() {
 		m1 := make(map[string]int64)
 		m1["id"] = id
 		marshal, _ := json.Marshal(m1)
-		tasks.DoDeduce(marshal, cache.GetKey(), true)
+		tasks.DoDeduce(marshal, "AIzaSyDtq_JxR5_CjEcTTn3Z04_B35ubkS4TIT0", false)
+		tasks.DoDeduce(marshal, "AIzaSyDuuAfsnQNP6hzDzep6-EWMwufYV9I9oFc", true)
 		fmt.Printf("id:%d deduce done\r\n", id)
 	}
 }

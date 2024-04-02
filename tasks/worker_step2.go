@@ -6,8 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"gemini/db"
+	"gemini/profile"
 	"gemini/store"
 	"gemini/tpl"
+	deepcopier "gemini/utils"
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
 	"log"
@@ -65,6 +67,10 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 		err = result.Step2Update(db.Client())
 		fmt.Printf("update id: %d gemini step2 result:%s \r\n", id, step2ByStep1Data)
 	}
+	step1AndStep2MergeJson := mergeStep1AndStep2([]byte(result.GeminiStep1), []byte(result.GeminiStep2))
+	jsonData, _ := json.Marshal(step1AndStep2MergeJson)
+	fmt.Println(jsonData)
+	//TODO 保存合并后的数据
 	return err == nil
 }
 
@@ -143,6 +149,33 @@ func step2ContentBuilder(step1Result string) string {
 		panic(err)
 	}
 	return buf.String()
+}
+
+func mergeStep1AndStep2(step1Json, step2Json []byte) *profile.Resume {
+	resumeData := profile.ParseStep1JsonData(step1Json)
+	workExpData, eduInfoData := profile.ParseStep2JsonData(step2Json)
+	for i := 0; i < len(resumeData.WorkExperience); i++ {
+		experience := resumeData.WorkExperience[i]
+		positionInfoArr := resumeData.WorkExperience[i].PositionInfo
+		for j := 0; j < len(positionInfoArr); j++ {
+			info := &positionInfoArr[j]
+			title := info.JobTitle
+			for _, work := range workExpData {
+				if experience.CompanyName == work.CompanyName || title == work.JobTitle {
+					deepcopier.Copy(work.CompanyAdditionalInfo).To(&info.CompanyAdditionalInfo)
+				}
+			}
+		}
+	}
+	for i := 0; i < len(resumeData.Educations); i++ {
+		education := &resumeData.Educations[i]
+		for _, info := range eduInfoData {
+			if education.School == info.School || education.Degree == info.Degree {
+				deepcopier.Copy(info.EducationAdditionalInfo).To(&education.EducationAdditionalInfo)
+			}
+		}
+	}
+	return resumeData
 }
 
 type Step1Result struct {

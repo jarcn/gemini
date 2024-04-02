@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"gemini/db"
 	"gemini/profile"
 	"gemini/store"
+	deepcopier "gemini/utils"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/elastic/go-elasticsearch/v7/esapi"
 	"log"
@@ -21,16 +23,44 @@ func init() {
 func main() {
 	result := store.GeminiResult{}
 	all, _ := result.FindAll(db.Client())
-	var resumeArr []profile.Resume
+	//var resumeArr []profile.Resume
 	for _, d := range all {
 		step1 := d.GeminiStep1
-		data := []byte(step1)
-		resume := profile.ParseStep1JsonData(data)
+		step2 := d.GeminiStep2
+		resume := mergeStep1AndStep2([]byte(step1), []byte(step2))
 		resume.BasicInformation.ProfileUrl = d.CVURL
 		resume.ID = d.ID
-		resumeArr = append(resumeArr, resume)
+		expArr, _ := json.Marshal(resume)
+		fmt.Println(string(expArr))
 	}
-	insert2ES(resumeArr)
+	//insert2ES(resumeArr)
+}
+
+func mergeStep1AndStep2(step1Json, step2Json []byte) *profile.Resume {
+	resumeData := profile.ParseStep1JsonData(step1Json)
+	workExpData, eduInfoData := profile.ParseStep2JsonData(step2Json)
+	for i := 0; i < len(resumeData.WorkExperience); i++ {
+		experience := resumeData.WorkExperience[i]
+		positionInfoArr := resumeData.WorkExperience[i].PositionInfo
+		for j := 0; j < len(positionInfoArr); j++ {
+			info := &positionInfoArr[j]
+			title := info.JobTitle
+			for _, work := range workExpData {
+				if experience.CompanyName == work.CompanyName || title == work.JobTitle {
+					deepcopier.Copy(work.CompanyAdditionalInfo).To(&info.CompanyAdditionalInfo)
+				}
+			}
+		}
+	}
+	for i := 0; i < len(resumeData.Educations); i++ {
+		education := &resumeData.Educations[i]
+		for _, info := range eduInfoData {
+			if education.School == info.School || education.Degree == info.Degree {
+				deepcopier.Copy(info.EducationAdditionalInfo).To(&education.EducationAdditionalInfo)
+			}
+		}
+	}
+	return resumeData
 }
 
 func insert2ES(resumeArr []profile.Resume) {

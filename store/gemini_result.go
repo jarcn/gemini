@@ -1,6 +1,7 @@
 package store
 
 import (
+	"fmt"
 	"github.com/cookieY/sqlx"
 	_ "github.com/go-sql-driver/mysql"
 	"time"
@@ -114,8 +115,23 @@ func (gr *GeminiResult) Delete(db *sqlx.DB) error {
 }
 
 func (gr *GeminiResult) FindAll(db *sqlx.DB) ([]GeminiResult, error) {
-	findAll := `select distinct(cv_url),gemini_step1_result,id from qiyee_job_data.tbl_gemini_result where gemini_step1_result !=""`
+	findAll := `select * from qiyee_job_data.tbl_gemini_result where gemini_step1_result !="" and gemini_step2_result !=""`
 	var result []GeminiResult
 	err := db.Select(&result, findAll)
 	return result, err
+}
+
+func (gr *GeminiResult) FindByIds(ids []int64, db *sqlx.DB) ([]GeminiResult, error) {
+	var result []GeminiResult
+	query, args, err := sqlx.In("select * from tbl_gemini_result where id in (?)", ids)
+	if err != nil {
+		fmt.Println("Error building query:", err)
+		return nil, err
+	}
+	err = db.Select(&result, query, args...)
+	if err != nil {
+		fmt.Println("Error executing query:", err)
+		return nil, err
+	}
+	return result, nil
 }
