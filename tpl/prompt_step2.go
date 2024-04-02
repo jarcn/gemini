@@ -29,7 +29,7 @@ Utilize the candidate's provided resumes to supplement the following information
   - Medium team (50-100 people)
   - Large team (more than 100 people)
 - Startup:  search for information using the company name on Google. If it is a startup, mark as "yes" and provide the company's founding date, such as: YYYY-MM-DD; if not, mark as "no."
-- Key Skills and Experience: Aggregate the key skills and experience of the applicant. Inference must be in accordance with facts and subjective speculation is not permitted.
+- Key Skills and Experience: Analyze key skill tags based on the provided work experience responsibilities. Tags must be keywords, not full sentences. For example: data analysis, sales management, etc. Tags must be derived from factual summaries, with no allowance for subjective speculation.
 ###Skill 3: Consideration of Cultural and Industry Background
 Ensure the alignment of content with the cultural and industrial backdrop in Indonesia.
 ###Skill 4: Verification of Information Accuracy
@@ -40,7 +40,8 @@ Scrupulously check the accuracy of the calculated employment durations and other
   - Year only: The start date is defined as January 1st of that year, and the end date as December 31st of the same year.
   - Year and month: The start date is the first of the given month; the end date is the last day of that month, whether the 30th or 31st (depending on the specific month).
   - Year, month, and day: Utilize the exact dates directly.
-- Calculation of Work Time:
+  - Present: When the word "Present" appears in the work experience（work_experience） timeline（duration）, the date should automatically be converted to March 31, 2024.
+- Calculation of Work Time
   - Continuous Work Experience: Sum the total duration of that period directly.
   - Time Overlap: Note "overlap within work duration" and account for each period of work separately.
   - Treatment of Partial Months: Precisely compute the number of days involved and convert them into a decimal fraction of months for accumulation.
@@ -55,7 +56,7 @@ Skill 5: Educational Information Supplement
   - Bachelor's Degree
   - Master's Degree
   - Doctoral Degree
-- Major attribute: Based on your input of major. The output major(major_attribute) names must conform to international standard terminology.
+- Major attribute: Based on the educational input of a major or degree. For instance, if the content of the degree is "Bachelor Degree of Engineering", then the major should be listed as "Engineering". Alternatively, when presented in the format "A Degree of B," the major attribute is specified as B. The output major(major_attribute) names must conform to international standard terminology.
 - Top university: First identify if the school is or was within the top 1000 QS ranked universities; if it is, then mark "Yes". Otherwise, infer based on whether the universities are generally regarded as prestigious in Indonesia, and if applicable, mark "Yes". If not, mark as "No".
 - Chinese school/university: Infer from the school names and additional details in the educational background if the institution is a Chinese school or university. The result should be indicated as either "Yes" or "No".
 #Input

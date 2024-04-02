@@ -2,9 +2,38 @@ package profile
 
 import (
 	"encoding/json"
+	deepcopier "gemini/utils"
 	"github.com/buger/jsonparser"
 	"strconv"
 )
+
+// MergeStep1AndStep2 合并任务一任务的结果
+func MergeStep1AndStep2(step1Json, step2Json []byte) *Resume {
+	resumeData := ParseStep1JsonData(step1Json)
+	workExpData, eduInfoData := ParseStep2JsonData(step2Json)
+	for i := 0; i < len(resumeData.WorkExperience); i++ {
+		experience := resumeData.WorkExperience[i]
+		positionInfoArr := resumeData.WorkExperience[i].PositionInfo
+		for j := 0; j < len(positionInfoArr); j++ {
+			info := &positionInfoArr[j]
+			title := info.JobTitle
+			for _, work := range workExpData {
+				if experience.CompanyName == work.CompanyName || title == work.JobTitle {
+					deepcopier.Copy(work.CompanyAdditionalInfo).To(&info.CompanyAdditionalInfo)
+				}
+			}
+		}
+	}
+	for i := 0; i < len(resumeData.Educations); i++ {
+		education := &resumeData.Educations[i]
+		for _, info := range eduInfoData {
+			if education.School == info.School || education.Degree == info.Degree {
+				deepcopier.Copy(info.EducationAdditionalInfo).To(&education.EducationAdditionalInfo)
+			}
+		}
+	}
+	return resumeData
+}
 
 // ParseStep2JsonData 解析任务二工作经历Json结果
 func ParseStep2JsonData(jsonData []byte) ([]WorkExperienceArray, []EduInfoArray) {
