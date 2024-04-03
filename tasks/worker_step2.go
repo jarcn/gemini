@@ -113,30 +113,26 @@ func GeminiStep2Deduce(step1Result, key string) string {
 	content := step2ContentBuilder(step1Result)
 	log.Printf("call step2 request para length:%d\r\n", len(content))
 	resp, err := model.GenerateContent(ctx, genai.Text(content))
-	if err != nil {
-		log.Println("call gemini error:", err)
-		return ""
+	if resp == nil || err != nil {
+		log.Println("gemini response data is null")
+		return "error"
 	}
+	errorMsg, _ := json.Marshal(resp)
 	reason := resp.Candidates[0].FinishReason
 	if reason == 0 || reason == 1 || reason == 2 || reason == 3 || reason == 4 || reason == 5 {
-		errorMsg, _ := json.Marshal(resp)
-		log.Println("step2 call gemini response:", string(errorMsg))
-		return string(errorMsg)
+		log.Println("step1 call gemini response:", string(errorMsg))
+		return "error"
 	}
 	candidates := resp.Candidates
-	defer func() string {
-		errorMsg, _ := json.Marshal(resp)
+	defer func() {
 		if r := recover(); r != nil {
 			log.Println("Recovered from panic:", r)
-			log.Println("step2 call gemini response:", string(errorMsg))
 		}
-		return string(errorMsg)
 	}()
 	if resp == nil || len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
-		return ""
+		return "error"
 	}
 	part := candidates[0].Content.Parts[0]
-	log.Printf("call step2 response data:%s\r\n", part)
 	return fmt.Sprintf("%s", part)
 }
 

@@ -106,23 +106,21 @@ func GeminiStep1Merge(ocrCv, profileCv, key string) string {
 	}
 	content := parseContent(ocrCv, profileCv)
 	resp, err := model.GenerateContent(ctx, genai.Text(content))
-	reason := resp.Candidates[0].FinishReason
-	if reason == 0 || reason == 1 || reason == 2 || reason == 3 || reason == 4 || reason == 5 {
-		errorMsg, _ := json.Marshal(resp)
-		log.Println("step1 call gemini response:", string(errorMsg))
+	if resp == nil || err != nil {
+		log.Println("gemini response data is null")
 		return "error"
 	}
-	if err != nil {
-		log.Println("call gemini error:", err)
-		return ""
+	errorMsg, _ := json.Marshal(resp)
+	reason := resp.Candidates[0].FinishReason
+	if reason == 0 || reason == 1 || reason == 2 || reason == 3 || reason == 4 || reason == 5 {
+		log.Println("step1 call gemini response:", string(errorMsg))
+		return "error"
 	}
 	candidates := resp.Candidates
 	defer func() {
 		if r := recover(); r != nil {
 			log.Println("Recovered from panic:", r)
 		}
-		errorMsg, _ := json.Marshal(resp)
-		log.Println("step1 call gemini response:", string(errorMsg))
 	}()
 	if resp == nil || len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
 		return ""
