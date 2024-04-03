@@ -40,19 +40,22 @@ func DoMerge(msg []byte, key string) bool {
 		fmt.Println("insert data error:", err)
 		return false
 	}
-	step1 := geminiStep1Merge(profile, "", key)
+	step1 := GeminiStep1Merge(profile, "", key)
 	if step1 == "" {
 		return false
 	}
-	jsonResult := getJSON(step1)
+	jsonResult := GetJSON(step1)
 	result.GeminiStep1 = jsonResult
 	result.ID = id
 	err = result.Update(db.Client())
 	fmt.Println("update gemini result", jsonResult)
+	if err != nil {
+		// todo 送到任务二的队列进行处理
+	}
 	return err == nil
 }
 
-func getJSON(s string) string {
+func GetJSON(s string) string {
 	start := strings.Index(s, "{")
 	end := strings.LastIndex(s, "}")
 	if start == -1 || end == -1 || start >= end {
@@ -61,7 +64,7 @@ func getJSON(s string) string {
 	return s[start : end+1]
 }
 
-func geminiStep1Merge(ocrCv, profileCv, key string) string {
+func GeminiStep1Merge(ocrCv, profileCv, key string) string {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, option.WithAPIKey(key))
 	if err != nil {
@@ -98,13 +101,12 @@ func geminiStep1Merge(ocrCv, profileCv, key string) string {
 		return ""
 	}
 	candidates := resp.Candidates
-	defer func() string {
+	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered from panic:", r)
 		}
 		errorMsg, _ := json.Marshal(resp)
 		fmt.Println("step1 call gemini response:", string(errorMsg))
-		return string(errorMsg)
 	}()
 	if resp == nil || len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
 		return ""

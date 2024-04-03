@@ -1,11 +1,18 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gemini/cache"
 	"gemini/db"
+	"gemini/store"
 	"gemini/tasks"
+	"github.com/IBM/sarama"
+	"log"
+	"os"
+	"os/signal"
+	"sync"
 )
 
 func init() {
@@ -14,20 +21,108 @@ func init() {
 	cache.InitKeyCache()
 }
 
+var brokers = []string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"} // 生产环境
+// var brokers = []string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"} // 预发环境
+var topic = "gemini-step2" // 要消费的主题
+var consumerGroup = "gemini-step2-group"
+
 func main() {
-	var idMap = []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 38,
-		39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 55, 56, 57, 59, 60, 61, 64, 67, 68, 69, 70, 71, 72, 73, 74, 76, 78, 79, 80, 81, 82, 83, 84,
-		86, 87, 88, 89, 90, 93, 96, 97, 98, 99, 100, 101, 102, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 115, 117, 118, 120, 122, 124, 125, 126,
-		127, 128, 129, 131, 134, 135, 136, 138, 139, 140, 141, 142, 144, 145, 146, 148, 149, 150, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161,
-		162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 176, 178, 179, 181, 182, 183, 185, 186, 187, 188, 189, 190, 191, 192, 193,
-		194, 195, 196, 197, 199, 200, 203, 204, 205, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 220, 222, 225, 226, 227, 228, 229,
-		230, 231, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242}
-	for _, id := range idMap {
-		m1 := make(map[string]int64)
-		m1["id"] = id
-		marshal, _ := json.Marshal(m1)
-		tasks.DoDeduce(marshal, "AIzaSyDtq_JxR5_CjEcTTn3Z04_B35ubkS4TIT0", false)
-		tasks.DoDeduce(marshal, "AIzaSyDuuAfsnQNP6hzDzep6-EWMwufYV9I9oFc", true)
-		fmt.Printf("id:%d deduce done\r\n", id)
+	//productStart()
+	consumerStart()
+}
+
+// productStart 先写数据(自产自销)
+func productStart() {
+	config := sarama.NewConfig()
+	config.Producer.RequiredAcks = sarama.WaitForAll
+	config.Producer.Retry.Max = 5
+	config.Producer.Return.Successes = true
+	producer, err := sarama.NewSyncProducer(brokers, config)
+	if err != nil {
+		log.Fatalf("Error creating Kafka producer: %v", err)
 	}
+	defer producer.Close()
+	var result store.GeminiResult
+	allData, err := result.SelectAll(db.Client())
+	for _, d := range allData {
+		var data = make(map[string]int64)
+		data["id"] = d.ID
+		marshal, _ := json.Marshal(data)
+		msg := &sarama.ProducerMessage{ // 构建消息
+			Topic: topic,
+			Value: sarama.StringEncoder(marshal),
+		}
+		go producer.SendMessage(msg) // 发送消息
+		//if err != nil {
+		//	log.Fatalf("Failed to send message: %v", err)
+		//}
+		//log.Printf("Message sent successfully! Partition: %d, Offset: %d", partition, offset)
+	}
+}
+
+// consumerStart 启动消费者
+func consumerStart() {
+	config := sarama.NewConfig()                                                  // 创建 Kafka 消费者配置
+	config.Consumer.Group.Rebalance.Strategy = sarama.BalanceStrategyRange        // 使用Range重新平衡策略
+	consumerGroup, err := sarama.NewConsumerGroup(brokers, consumerGroup, config) // 创建消费者组
+	if err != nil {
+		fmt.Println("Error creating consumer group:", err)
+		return
+	}
+	defer func() {
+		if err := consumerGroup.Close(); err != nil {
+			fmt.Println("Error closing consumer group:", err)
+		}
+	}()
+	handler := &ConsumerGroupHandler{}                      // 处理函数
+	ctx, cancel := context.WithCancel(context.Background()) // 开始消费消息
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			if err := consumerGroup.Consume(ctx, []string{topic}, handler); err != nil {
+				fmt.Println("Error from consumer:", err)
+				cancel()
+				return
+			}
+			if ctx.Err() != nil {
+				return
+			}
+		}
+	}()
+	// 等待中断信号以优雅地关闭消费者
+	sigterm := make(chan os.Signal, 1)
+	signal.Notify(sigterm, os.Interrupt)
+	<-sigterm
+	fmt.Println("Interrupt received, shutting down consumer group...")
+	cancel()
+	wg.Wait()
+	fmt.Println("Consumer group shutdown complete.")
+}
+
+// 实现了sarama.ConsumerGroupHandler接口
+type ConsumerGroupHandler struct{}
+
+// 在消费者组开始消费前调用，用于初始化
+func (ConsumerGroupHandler) Setup(sarama.ConsumerGroupSession) error { return nil }
+
+// 在消费者组停止消费后调用，用于清理
+func (ConsumerGroupHandler) Cleanup(sarama.ConsumerGroupSession) error { return nil }
+
+// 将消息传递给处理程序处理
+func (h *ConsumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
+	for message := range claim.Messages() {
+		if h.ProcessMessage(message) { //消息处理
+			session.MarkMessage(message, "gemini parse success") // 提交消息的消费确认信息
+		} else {
+			fmt.Println("Message processing failed.") // 处理失败，不提交确认信息
+		}
+	}
+	return nil
+}
+
+func (h *ConsumerGroupHandler) ProcessMessage(message *sarama.ConsumerMessage) bool {
+	fmt.Printf("Message claimed: value = %s, partition = %d, offset = %d, topic = %s\n", message.Value, message.Partition, message.Offset, message.Topic)
+	return tasks.DoDeduce(message.Value, cache.GetKey(), false)
 }

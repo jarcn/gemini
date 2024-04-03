@@ -121,6 +121,13 @@ func (gr *GeminiResult) FindAll(db *sqlx.DB) ([]GeminiResult, error) {
 	return result, err
 }
 
+func (gr *GeminiResult) SelectAll(db *sqlx.DB) ([]GeminiResult, error) {
+	findAll := `select id from qiyee_job_data.tbl_gemini_result`
+	var result []GeminiResult
+	err := db.Select(&result, findAll)
+	return result, err
+}
+
 func (gr *GeminiResult) FindByIds(ids []int64, db *sqlx.DB) ([]GeminiResult, error) {
 	var result []GeminiResult
 	query, args, err := sqlx.In("select * from tbl_gemini_result where id in (?)", ids)

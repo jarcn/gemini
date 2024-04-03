@@ -12,7 +12,6 @@ import (
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
 	"log"
-	"strings"
 	"text/template"
 )
 
@@ -33,27 +32,34 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 		fmt.Printf("query step1 result error:%s\r\n", err)
 		return false
 	}
+	if result.GeminiStep1 == "" {
+		step1 := GeminiStep1Merge(result.CVData, "", key)
+		if step1 == "" {
+			return false
+		}
+		jsonResult := GetJSON(step1)
+		result.GeminiStep1 = jsonResult
+		result.ID = id
+		err = result.Update(client)
+		fmt.Println("update gemini result", jsonResult)
+	}
 	if isCvData {
 		if result.CVData == "" {
 			fmt.Printf("id: %d not have cv data \r\n", id)
 			return true
 		}
-		if result.GeminiStep2 == "" {
-			fmt.Printf("id:%d not have step2 result deduce\r\n", id)
-			return true
-		}
-		step2ByCVData := geminiStep2Deduce(result.CVData, key) //使用原始CV数据跑任务二
+		step2ByCVData := GeminiStep2Deduce(result.CVData, key) //使用原始CV数据跑任务二
 		if step2ByCVData == "" {
 			return false
 		}
-		step2Result := step2ResultToJson(step2ByCVData)
+		step2Result := GetJSON(step2ByCVData)
 		result.GeminiStep4 = step2Result
 		result.GeminiKey = key
 		fmt.Printf("update id: %d gemini step2 result:%s \r\n", id, step2ByCVData)
 	} else {
 		if result.GeminiStep1 == "" {
-			fmt.Printf("id: %d not have step1 result\r\n", id)
-			return true
+			fmt.Println("not have GeminiStep1 gemini result")
+			return false
 		}
 		if result.GeminiStep2 != "" {
 			fmt.Printf("id:%d step2 already deduce\r\n", id)
@@ -63,13 +69,13 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 			err = result.Step4Update(client)
 			return true
 		}
-		step2ByStep1Data := geminiStep2Deduce(result.GeminiStep1, key) //使用任务一的结构跑任务二
-		step2Result := step2ResultToJson(step2ByStep1Data)
+		step2ByStep1Data := GeminiStep2Deduce(result.GeminiStep1, key) //使用任务一的结构跑任务二
+		step2Result := GetJSON(step2ByStep1Data)
 		result.GeminiStep2 = step2Result
 		result.GeminiKey = key
-		err = result.Step2Update(client)
-		fmt.Printf("update id: %d gemini step2 result:%s \r\n", id, step2ByStep1Data)
 	}
+	err = result.Step2Update(client)
+	fmt.Printf("update id: %d gemini step2 result:%s \r\n", id, result.GeminiStep2)
 	merge1And2Json := profile.MergeStep1AndStep2([]byte(result.GeminiStep1), []byte(result.GeminiStep2))
 	mergeJson, _ := json.Marshal(merge1And2Json)
 	result.GeminiStep4 = string(mergeJson)
@@ -77,16 +83,7 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 	return err == nil
 }
 
-func step2ResultToJson(s string) string {
-	start := strings.Index(s, "{")
-	end := strings.LastIndex(s, "}")
-	if start == -1 || end == -1 || start >= end {
-		return ""
-	}
-	return s[start : end+1]
-}
-
-func geminiStep2Deduce(step1Result, key string) string {
+func GeminiStep2Deduce(step1Result, key string) string {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, option.WithAPIKey(key))
 	if err != nil {
