@@ -2,7 +2,7 @@ package deepcopier
 
 import (
 	"database/sql/driver"
-	"fmt"
+	"log"
 	"reflect"
 	"strings"
 )
@@ -79,7 +79,7 @@ func process(dst interface{}, src interface{}, args ...Options) error {
 	}
 
 	if !dstValue.CanAddr() {
-		return fmt.Errorf("destination %+v is unaddressable", dstValue.Interface())
+		return log.Errorf("destination %+v is unaddressable", dstValue.Interface())
 	}
 
 	for _, f := range srcFieldNames {
@@ -205,7 +205,7 @@ func process(dst interface{}, src interface{}, args ...Options) error {
 
 		method := reflect.ValueOf(src).MethodByName(m)
 		if !method.IsValid() {
-			return fmt.Errorf("method %s is invalid", m)
+			return log.Errorf("method %s is invalid", m)
 		}
 
 		var (

@@ -1,9 +1,9 @@
 package cache
 
 import (
-	"fmt"
 	"gemini/db"
 	"gemini/store"
+	"log"
 	"math/rand"
 	"time"
 )
@@ -18,7 +18,7 @@ func InitKeyCache() {
 	for i := 0; i < len(keyArr); i++ {
 		KeyCache[i] = keyArr[i].Key
 	}
-	fmt.Println("gemini key init success")
+	log.Println("gemini key init success")
 }
 
 func GetKey() string {

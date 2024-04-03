@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"gemini/db"
+	"gemini/starter/kfk_product"
 	"gemini/store"
 	"gemini/tpl"
 	"github.com/google/generative-ai-go/genai"
@@ -19,7 +20,7 @@ func DoMerge(msg []byte, key string) bool {
 	data := make(map[string]interface{})
 	err := json.Unmarshal(msg, &data)
 	if err != nil {
-		fmt.Println("Error decoding JSON:", err)
+		log.Println("Error decoding JSON:", err)
 		return true
 	}
 	profile, _ := data["profile"].(string)
@@ -32,12 +33,12 @@ func DoMerge(msg []byte, key string) bool {
 	}
 	exists, err := result.CvExists(db.Client(), url)
 	if exists {
-		fmt.Println("cv url has exists")
+		log.Println("cv url has exists")
 		return true
 	}
 	id, err := result.Create(db.Client())
 	if err != nil {
-		fmt.Println("insert data error:", err)
+		log.Println("insert data error:", err)
 		return false
 	}
 	step1 := GeminiStep1Merge(profile, "", key)
@@ -48,11 +49,16 @@ func DoMerge(msg []byte, key string) bool {
 	result.GeminiStep1 = jsonResult
 	result.ID = id
 	err = result.Update(db.Client())
-	fmt.Println("update gemini result", jsonResult)
-	if err != nil {
-		// todo 送到任务二的队列进行处理
-	}
+	log.Println("update gemini result", jsonResult)
+	doStep2(id)
 	return err == nil
+}
+
+func doStep2(id int64) {
+	m := make(map[string]int64)
+	m["id"] = id
+	msgData, _ := json.Marshal(m)
+	kfk_product.SendMsg(db.KafkaBrokers, "step2-gemini-deduce", msgData) //送到任务二的队列进行处理
 }
 
 func GetJSON(s string) string {
@@ -97,16 +103,16 @@ func GeminiStep1Merge(ocrCv, profileCv, key string) string {
 	content := parseContent(ocrCv, profileCv)
 	resp, err := model.GenerateContent(ctx, genai.Text(content))
 	if err != nil {
-		fmt.Println("call gemini error:", err)
+		log.Println("call gemini error:", err)
 		return ""
 	}
 	candidates := resp.Candidates
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Recovered from panic:", r)
+			log.Println("Recovered from panic:", r)
 		}
 		errorMsg, _ := json.Marshal(resp)
-		fmt.Println("step1 call gemini response:", string(errorMsg))
+		log.Println("step1 call gemini response:", string(errorMsg))
 	}()
 	if resp == nil || len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
 		return ""

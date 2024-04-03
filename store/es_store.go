@@ -1,12 +1,10 @@
-package main
+package store
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"gemini/db"
 	"gemini/profile"
-	"gemini/store"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/elastic/go-elasticsearch/v7/esapi"
 	"log"
@@ -14,27 +12,10 @@ import (
 )
 
 func init() {
-	db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
-	//db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
+
 }
 
-func main() {
-	result := store.GeminiResult{}
-	all, _ := result.FindAll(db.Client())
-	var resumeArr []profile.Resume
-	for _, d := range all {
-		step1 := d.GeminiStep1
-		step2 := d.GeminiStep2
-		resume := profile.MergeStep1AndStep2([]byte(step1), []byte(step2))
-		resume.BasicInformation.ProfileUrl = d.CVURL
-		resume.ID = d.ID
-		expArr, _ := json.Marshal(resume)
-		log.Println(string(expArr))
-	}
-	insert2ES(resumeArr)
-}
-
-func insert2ES(resumeArr []profile.Resume) {
+func Insert2ES(resumeArr []profile.Resume) {
 	// Elasticsearch 连接配置
 	cfg := elasticsearch.Config{
 		//Addresses: []string{"http://10.128.0.165:9200", "http://10.128.0.72:9200"}, //生产环境

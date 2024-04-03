@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"gemini/cache"
 	"gemini/db"
 	"gemini/store"
@@ -27,8 +26,8 @@ var topic = "gemini-step2" // 要消费的主题
 var consumerGroup = "gemini-step2-group"
 
 func main() {
-	productStart()
-	//consumerStart()
+	//productStart()
+	consumerStart()
 }
 
 // productStart 先写数据(自产自销)
@@ -66,12 +65,12 @@ func consumerStart() {
 	config.Consumer.Group.Rebalance.Strategy = sarama.BalanceStrategyRange        // 使用Range重新平衡策略
 	consumerGroup, err := sarama.NewConsumerGroup(brokers, consumerGroup, config) // 创建消费者组
 	if err != nil {
-		fmt.Println("Error creating consumer group:", err)
+		log.Println("Error creating consumer group:", err)
 		return
 	}
 	defer func() {
 		if err := consumerGroup.Close(); err != nil {
-			fmt.Println("Error closing consumer group:", err)
+			log.Println("Error closing consumer group:", err)
 		}
 	}()
 	handler := &ConsumerGroupHandler{}                      // 处理函数
@@ -82,7 +81,7 @@ func consumerStart() {
 		defer wg.Done()
 		for {
 			if err := consumerGroup.Consume(ctx, []string{topic}, handler); err != nil {
-				fmt.Println("Error from consumer:", err)
+				log.Println("Error from consumer:", err)
 				cancel()
 				return
 			}
@@ -95,10 +94,10 @@ func consumerStart() {
 	sigterm := make(chan os.Signal, 1)
 	signal.Notify(sigterm, os.Interrupt)
 	<-sigterm
-	fmt.Println("Interrupt received, shutting down consumer group...")
+	log.Println("Interrupt received, shutting down consumer group...")
 	cancel()
 	wg.Wait()
-	fmt.Println("Consumer group shutdown complete.")
+	log.Println("Consumer group shutdown complete.")
 }
 
 // 实现了sarama.ConsumerGroupHandler接口
@@ -116,13 +115,13 @@ func (h *ConsumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession,
 		if h.ProcessMessage(message) { //消息处理
 			session.MarkMessage(message, "gemini parse success") // 提交消息的消费确认信息
 		} else {
-			fmt.Println("Message processing failed.") // 处理失败，不提交确认信息
+			log.Println("Message processing failed.") // 处理失败，不提交确认信息
 		}
 	}
 	return nil
 }
 
 func (h *ConsumerGroupHandler) ProcessMessage(message *sarama.ConsumerMessage) bool {
-	fmt.Printf("Message claimed: value = %s, partition = %d, offset = %d, topic = %s\n", message.Value, message.Partition, message.Offset, message.Topic)
+	log.Printf("Message claimed: value = %s, partition = %d, offset = %d, topic = %s\n", message.Value, message.Partition, message.Offset, message.Topic)
 	return tasks.DoDeduce(message.Value, cache.GetKey(), false)
 }

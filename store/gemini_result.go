@@ -1,9 +1,9 @@
 package store
 
 import (
-	"fmt"
 	"github.com/cookieY/sqlx"
 	_ "github.com/go-sql-driver/mysql"
+	"log"
 	"time"
 )
 
@@ -132,12 +132,12 @@ func (gr *GeminiResult) FindByIds(ids []int64, db *sqlx.DB) ([]GeminiResult, err
 	var result []GeminiResult
 	query, args, err := sqlx.In("select * from tbl_gemini_result where id in (?)", ids)
 	if err != nil {
-		fmt.Println("Error building query:", err)
+		log.Println("Error building query:", err)
 		return nil, err
 	}
 	err = db.Select(&result, query, args...)
 	if err != nil {
-		fmt.Println("Error executing query:", err)
+		log.Println("Error executing query:", err)
 		return nil, err
 	}
 	return result, nil
