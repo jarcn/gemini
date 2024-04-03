@@ -77,6 +77,7 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 	err = result.Step2Update(client)
 	fmt.Printf("update id: %d gemini step2 result:%s \r\n", id, result.GeminiStep2)
 	merge1And2Json := profile.MergeStep1AndStep2([]byte(result.GeminiStep1), []byte(result.GeminiStep2))
+	merge1And2Json.ID = result.ID
 	mergeJson, _ := json.Marshal(merge1And2Json)
 	result.GeminiStep4 = string(mergeJson)
 	err = result.Step4Update(client)

@@ -23,7 +23,7 @@ func init() {
 func main() {
 	result := store.GeminiResult{}
 	all, _ := result.FindAll(db.Client())
-	//var resumeArr []profile.Resume
+	var resumeArr []profile.Resume
 	for _, d := range all {
 		step1 := d.GeminiStep1
 		step2 := d.GeminiStep2
@@ -33,7 +33,7 @@ func main() {
 		expArr, _ := json.Marshal(resume)
 		fmt.Println(string(expArr))
 	}
-	//insert2ES(resumeArr)
+	insert2ES(resumeArr)
 }
 
 func mergeStep1AndStep2(step1Json, step2Json []byte) *profile.Resume {
