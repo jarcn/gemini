@@ -122,7 +122,7 @@ func (gr *GeminiResult) FindAll(db *sqlx.DB) ([]GeminiResult, error) {
 }
 
 func (gr *GeminiResult) SelectAll(db *sqlx.DB) ([]GeminiResult, error) {
-	findAll := `select id from qiyee_job_data.tbl_gemini_result`
+	findAll := `select id from qiyee_job_data.tbl_gemini_result where gemini_step1_result !="" and gemini_step2_result = ""`
 	var result []GeminiResult
 	err := db.Select(&result, findAll)
 	return result, err

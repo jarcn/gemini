@@ -15,8 +15,8 @@ import (
 )
 
 func init() {
-	//db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
-	db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
+	db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
+	//db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
 	cache.InitKeyCache()
 }
 
@@ -27,7 +27,19 @@ var consumerGroup = "gemini-step2-group"
 
 func main() {
 	//productStart()
-	consumerStart()
+	//consumerStart()
+	consumerSync()
+}
+
+func consumerSync() {
+	var result store.GeminiResult
+	allData, _ := result.SelectAll(db.Client())
+	for _, d := range allData {
+		var data = make(map[string]int64)
+		data["id"] = d.ID
+		marshal, _ := json.Marshal(data)
+		tasks.DoDeduce(marshal, "AIzaSyBTRLUbz_9wX_prQWNjjtLueMIaF_uJEm8", false)
+	}
 }
 
 // productStart 先写数据(自产自销)
@@ -122,6 +134,5 @@ func (h *ConsumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession,
 }
 
 func (h *ConsumerGroupHandler) ProcessMessage(message *sarama.ConsumerMessage) bool {
-	log.Printf("Message claimed: value = %s, partition = %d, offset = %d, topic = %s\n", message.Value, message.Partition, message.Offset, message.Topic)
-	return tasks.DoDeduce(message.Value, "AIzaSyCEA7MJWanDqx78SaWR1SJ0F3Bkk_1WdDk", false)
+	return tasks.DoDeduce(message.Value, "AIzaSyBTRLUbz_9wX_prQWNjjtLueMIaF_uJEm8", false)
 }

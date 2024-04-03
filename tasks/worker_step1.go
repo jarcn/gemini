@@ -85,7 +85,6 @@ func GeminiStep1Merge(ocrCv, profileCv, key string) string {
 	model.SetTopK(1)
 	model.SetTopP(1)
 	model.SetMaxOutputTokens(2048)
-	model.SetCandidateCount(30720)
 	model.SafetySettings = []*genai.SafetySetting{
 		{
 			Category:  genai.HarmCategoryHarassment,
@@ -107,7 +106,7 @@ func GeminiStep1Merge(ocrCv, profileCv, key string) string {
 	content := parseContent(ocrCv, profileCv)
 	resp, err := model.GenerateContent(ctx, genai.Text(content))
 	if resp == nil || err != nil {
-		log.Println("gemini response data is null")
+		log.Println("step1 gemini response data is null", err)
 		return "error"
 	}
 	errorMsg, _ := json.Marshal(resp)

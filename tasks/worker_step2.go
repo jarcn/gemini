@@ -12,7 +12,6 @@ import (
 	"google.golang.org/api/option"
 	"log"
 	"text/template"
-	"time"
 )
 
 func DoDeduce(msg []byte, key string, isCvData bool) bool {
@@ -75,7 +74,6 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 	}
 	err = result.Step2Update(client)
 	log.Printf("update id: %d gemini step2 result:%s \r\n", id, result.GeminiStep2)
-	time.Sleep(time.Second * 10)
 	return err == nil
 }
 
@@ -91,7 +89,6 @@ func GeminiStep2Deduce(step1Result, key string) string {
 	model.SetTopK(1)
 	model.SetTopP(1)
 	model.SetMaxOutputTokens(2048)
-	model.SetCandidateCount(30720)
 	model.SafetySettings = []*genai.SafetySetting{
 		{
 			Category:  genai.HarmCategoryHarassment,
@@ -112,15 +109,17 @@ func GeminiStep2Deduce(step1Result, key string) string {
 	}
 	content := step2ContentBuilder(step1Result)
 	log.Printf("call step2 request para length:%d\r\n", len(content))
-	resp, err := model.GenerateContent(ctx, genai.Text(content))
+	text := genai.Text(content)
+	log.Printf("call step2 request data:%s\r\n", text)
+	resp, err := model.GenerateContent(ctx, text)
 	if resp == nil || err != nil {
-		log.Println("gemini response data is null")
+		log.Println("step2 gemini response data is null", err)
 		return "error"
 	}
 	errorMsg, _ := json.Marshal(resp)
 	reason := resp.Candidates[0].FinishReason
 	if reason == 0 || reason == 1 || reason == 2 || reason == 3 || reason == 4 || reason == 5 {
-		log.Println("step1 call gemini response:", string(errorMsg))
+		log.Println("step2 call gemini response:", string(errorMsg))
 		return "error"
 	}
 	candidates := resp.Candidates
