@@ -12,6 +12,7 @@ import (
 	"google.golang.org/api/option"
 	"log"
 	"text/template"
+	"time"
 )
 
 func DoDeduce(msg []byte, key string, isCvData bool) bool {
@@ -33,6 +34,9 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 	}
 	if result.GeminiStep1 == "" {
 		step1 := GeminiStep1Merge(result.CVData, "", key)
+		if step1 == "error" {
+			return true
+		}
 		if step1 == "" {
 			return false
 		}
@@ -58,7 +62,7 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 	} else {
 		if result.GeminiStep1 == "" {
 			log.Println("not have GeminiStep1 gemini result")
-			return false
+			return true
 		}
 		if result.GeminiStep2 != "" {
 			log.Printf("id:%d gemini step2 already done \r\n", id)
@@ -71,6 +75,7 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 	}
 	err = result.Step2Update(client)
 	log.Printf("update id: %d gemini step2 result:%s \r\n", id, result.GeminiStep2)
+	time.Sleep(time.Second * 10)
 	return err == nil
 }
 
@@ -86,6 +91,7 @@ func GeminiStep2Deduce(step1Result, key string) string {
 	model.SetTopK(1)
 	model.SetTopP(1)
 	model.SetMaxOutputTokens(2048)
+	model.SetCandidateCount(30720)
 	model.SafetySettings = []*genai.SafetySetting{
 		{
 			Category:  genai.HarmCategoryHarassment,
@@ -105,11 +111,17 @@ func GeminiStep2Deduce(step1Result, key string) string {
 		},
 	}
 	content := step2ContentBuilder(step1Result)
-	log.Printf("call step2 request para:%s\r\n", content)
+	log.Printf("call step2 request para length:%d\r\n", len(content))
 	resp, err := model.GenerateContent(ctx, genai.Text(content))
 	if err != nil {
 		log.Println("call gemini error:", err)
 		return ""
+	}
+	reason := resp.Candidates[0].FinishReason
+	if reason == 0 || reason == 1 || reason == 2 || reason == 3 || reason == 4 || reason == 5 {
+		errorMsg, _ := json.Marshal(resp)
+		log.Println("step2 call gemini response:", string(errorMsg))
+		return string(errorMsg)
 	}
 	candidates := resp.Candidates
 	defer func() string {

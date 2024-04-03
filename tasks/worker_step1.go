@@ -42,6 +42,9 @@ func DoMerge(msg []byte, key string) bool {
 		return false
 	}
 	step1 := GeminiStep1Merge(profile, "", key)
+	if step1 == "error" {
+		return true
+	}
 	if step1 == "" {
 		return false
 	}
@@ -82,6 +85,7 @@ func GeminiStep1Merge(ocrCv, profileCv, key string) string {
 	model.SetTopK(1)
 	model.SetTopP(1)
 	model.SetMaxOutputTokens(2048)
+	model.SetCandidateCount(30720)
 	model.SafetySettings = []*genai.SafetySetting{
 		{
 			Category:  genai.HarmCategoryHarassment,
@@ -102,6 +106,12 @@ func GeminiStep1Merge(ocrCv, profileCv, key string) string {
 	}
 	content := parseContent(ocrCv, profileCv)
 	resp, err := model.GenerateContent(ctx, genai.Text(content))
+	reason := resp.Candidates[0].FinishReason
+	if reason == 0 || reason == 1 || reason == 2 || reason == 3 || reason == 4 || reason == 5 {
+		errorMsg, _ := json.Marshal(resp)
+		log.Println("step1 call gemini response:", string(errorMsg))
+		return "error"
+	}
 	if err != nil {
 		log.Println("call gemini error:", err)
 		return ""

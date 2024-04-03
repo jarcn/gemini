@@ -15,8 +15,8 @@ import (
 )
 
 func init() {
-	//db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
-	db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
+	db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
+	//db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
 	cache.InitKeyCache()
 }
 
@@ -123,5 +123,5 @@ func (h *ConsumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession,
 
 func (h *ConsumerGroupHandler) ProcessMessage(message *sarama.ConsumerMessage) bool {
 	log.Printf("Message claimed: value = %s, partition = %d, offset = %d, topic = %s\n", message.Value, message.Partition, message.Offset, message.Topic)
-	return tasks.DoDeduce(message.Value, cache.GetKey(), false)
+	return tasks.DoDeduce(message.Value, "AIzaSyCEA7MJWanDqx78SaWR1SJ0F3Bkk_1WdDk", false)
 }
