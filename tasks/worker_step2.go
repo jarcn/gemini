@@ -25,6 +25,7 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 	id, _ := data["id"]
 	result := &store.GeminiResult{
 		GeminiKey: key,
+		ID:        id,
 	}
 	result, err = result.QueryById(client, id)
 	if err != nil {
@@ -57,6 +58,7 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 		step2Result := GetJSON(step2ByCVData)
 		result.GeminiStep4 = step2Result
 		result.GeminiKey = key
+		err = result.Step2Update(client)
 		log.Printf("update id: %d gemini step2 result:%s \r\n", id, step2ByCVData)
 	} else {
 		if result.GeminiStep1 == "" {
@@ -71,9 +73,12 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 		step2Result := GetJSON(step2ByStep1Data)
 		result.GeminiStep2 = step2Result
 		result.GeminiKey = key
+		err = result.Step2Update(client)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Printf("update id: %d gemini step2 result:%s \r\n", id, result.GeminiStep2)
 	}
-	err = result.Step2Update(client)
-	log.Printf("update id: %d gemini step2 result:%s \r\n", id, result.GeminiStep2)
 	return err == nil
 }
 
