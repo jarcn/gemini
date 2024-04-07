@@ -1,5 +1,17 @@
 package profile
 
+type Resume struct {
+	ID                 int64              `json:"id"`
+	BasicInformation   BasicInformation   `json:"basic_information"`
+	ContactInformation ContactInformation `json:"contact_information"`
+	SefIntroduction    SefIntroduction    `json:"sef_introduction"`
+	WorkExperience     []WorkExperience   `json:"work_experience"`
+	Educations         []Education        `json:"education"`
+	Language           []Language         `json:"language"`
+	Skills             []Skill            `json:"skills"`
+	Certifications     []string           `json:"certifications"`
+}
+
 type ExpectSalary struct {
 	Min int64 `json:"min"`
 	Max int64 `json:"max"`
@@ -146,25 +158,14 @@ type SefIntroduction struct {
 	Desc string `json:"desc"`
 }
 
-type Resume struct {
-	ID                 int64              `json:"id"`
-	BasicInformation   BasicInformation   `json:"basic_information"`
-	ContactInformation ContactInformation `json:"contact_information"`
-	SefIntroduction    SefIntroduction    `json:"sef_introduction"`
-	WorkExperience     []WorkExperience   `json:"work_experience"`
-	Educations         []Education        `json:"education"`
-	Language           []Language         `json:"language"`
-	Skills             []Skill            `json:"skills"`
-	Certifications     []string           `json:"certifications"`
-}
-
-// step2 推导出的数据
+// WorkExperienceArray step2 推导结果
 type WorkExperienceArray struct {
 	CompanyName           string                `json:"company_name"`
 	JobTitle              string                `json:"job_title"`
 	CompanyAdditionalInfo CompanyAdditionalInfo `json:"company_additional_info"`
 }
 
+// EduInfoArray 任务二 推导结果
 type EduInfoArray struct {
 	School                  string                  `json:"school"`
 	Degree                  string                  `json:"degree"`

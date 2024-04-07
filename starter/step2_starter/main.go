@@ -33,7 +33,7 @@ func main() {
 
 func consumerSync() {
 	var result store.GeminiResult
-	allData, _ := result.SelectAll(db.Client())
+	allData, _ := result.FindByIds([]int64{3, 5, 6}, db.Client())
 	for _, d := range allData {
 		var data = make(map[string]int64)
 		data["id"] = d.ID
@@ -134,5 +134,6 @@ func (h *ConsumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession,
 }
 
 func (h *ConsumerGroupHandler) ProcessMessage(message *sarama.ConsumerMessage) bool {
-	return tasks.DoDeduce(message.Value, "AIzaSyBTRLUbz_9wX_prQWNjjtLueMIaF_uJEm8", false)
+	return true
+	//return tasks.DoDeduce(message.Value, "AIzaSyBTRLUbz_9wX_prQWNjjtLueMIaF_uJEm8", false)
 }
