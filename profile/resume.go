@@ -50,7 +50,6 @@ type PositionInfo struct {
 	CompanyAdditionalInfo CompanyAdditionalInfo `json:"company_additional_info"`
 }
 
-// todo
 type CompanyAdditionalInfo struct {
 	IndustryAttribute    IndustryAttribute    `json:"industry_attribute"`
 	CompanyIntroduction  CompanyIntroduction  `json:"company_introduction"`

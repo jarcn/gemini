@@ -2,7 +2,7 @@ package profile
 
 import (
 	"encoding/json"
-	deepcopier "gemini/utils"
+	utils "gemini/utils"
 	"github.com/buger/jsonparser"
 	"strconv"
 )
@@ -19,7 +19,7 @@ func MergeStep1AndStep2(step1Json, step2Json []byte) *Resume {
 			title := info.JobTitle
 			for _, work := range workExpData {
 				if experience.CompanyName == work.CompanyName || title == work.JobTitle {
-					deepcopier.Copy(work.CompanyAdditionalInfo).To(&info.CompanyAdditionalInfo)
+					utils.Copy(work.CompanyAdditionalInfo).To(&info.CompanyAdditionalInfo)
 				}
 			}
 		}
@@ -28,7 +28,7 @@ func MergeStep1AndStep2(step1Json, step2Json []byte) *Resume {
 		education := &resumeData.Educations[i]
 		for _, info := range eduInfoData {
 			if education.School == info.School || education.Degree == info.Degree {
-				deepcopier.Copy(info.EducationAdditionalInfo).To(&education.EducationAdditionalInfo)
+				utils.Copy(info.EducationAdditionalInfo).To(&education.EducationAdditionalInfo)
 			}
 		}
 	}
@@ -199,6 +199,7 @@ func parseBasicInfo(jsonData []byte) BasicInformation {
 	gender, _ := jsonparser.GetString(jsonData, "basic_information", "gender")
 	age, _ := jsonparser.GetInt(jsonData, "basic_information", "age")
 	birthday, _ := jsonparser.GetString(jsonData, "basic_information", "birthday")
+	birthday = utils.DateFormat(birthday)
 	maritalStatus, _ := jsonparser.GetString(jsonData, "basic_information", "marital_status")
 	religion, _ := jsonparser.GetString(jsonData, "basic_information", "religion")
 	residentialCity, _ := jsonparser.GetString(jsonData, "basic_information", "residential_city")

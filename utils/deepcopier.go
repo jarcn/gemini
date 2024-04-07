@@ -1,4 +1,4 @@
-package deepcopier
+package utils
 
 import (
 	"database/sql/driver"

@@ -28,8 +28,7 @@ func main() {
 		resume := profile.MergeStep1AndStep2([]byte(step1), []byte(step2))
 		resume.BasicInformation.ProfileUrl = d.CVURL
 		resume.ID = d.ID
-		expArr, _ := json.Marshal(resume)
-		log.Println(string(expArr))
+		resumeArr = append(resumeArr, *resume)
 	}
 	insert2ES(resumeArr)
 }
@@ -59,8 +58,7 @@ func insert2ES(resumeArr []profile.Resume) {
 
 		// 准备批量插入请求
 		req := esapi.IndexRequest{
-			//Index:      "gemini_hra", // 替换为你的索引名称
-			Index:      "hra_cv", // 替换为你的索引名称
+			Index:      "hra_cv_v1", // 替换为你的索引名称
 			DocumentID: strconv.Itoa(int(doc.ID)),
 			Body:       bytes.NewReader(docJSON),
 			Refresh:    "true",
