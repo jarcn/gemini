@@ -77,7 +77,7 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 		if err != nil {
 			log.Println(err)
 		}
-		log.Printf("update id: %d gemini step2 result:%s \r\n", id, result.GeminiStep2)
+		log.Printf("update id: %d gemini step2 result length:%d \r\n", id, len(result.GeminiStep2))
 	}
 	return err == nil
 }
@@ -123,7 +123,7 @@ func GeminiStep2Deduce(step1Result, key string) string {
 	}
 	errorMsg, _ := json.Marshal(resp)
 	reason := resp.Candidates[0].FinishReason
-	if reason == 0 || reason == 1 || reason == 2 || reason == 3 || reason == 4 || reason == 5 {
+	if reason == 0 || reason == 2 || reason == 3 || reason == 4 || reason == 5 {
 		log.Println("step2 call gemini response:", string(errorMsg))
 		return "error"
 	}
