@@ -74,6 +74,6 @@ func (h *Step2ConsumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSes
 
 // ProcessMessage 处理消息
 func (h *Step2ConsumerGroupHandler) ProcessMessage(message *sarama.ConsumerMessage) bool {
-	log.Printf("Message claimed: value = %s, partition = %d, offset = %d, topic = %s\n", message.Value, message.Partition, message.Offset, message.Topic)
+	log.Printf("Message claimed: value length = %d, partition = %d, offset = %d, topic = %s\n", len(message.Value), message.Partition, message.Offset, message.Topic)
 	return tasks.DoDeduce(message.Value, cache.GetKey(), false)
 }

@@ -15,8 +15,8 @@ import (
 )
 
 func init() {
-	db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
-	//db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
+	//db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
+	db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //预发环境
 	cache.InitKeyCache()
 }
 
@@ -26,9 +26,9 @@ var topic = "gemini-step2" // 要消费的主题
 var consumerGroup = "gemini-step2-group"
 
 func main() {
-	//productStart()
+	productStart()
 	//consumerStart()
-	consumerSync()
+	//consumerSync()
 }
 
 func consumerSync() {

@@ -61,7 +61,7 @@ func doStep2(id int64) {
 	m := make(map[string]int64)
 	m["id"] = id
 	msgData, _ := json.Marshal(m)
-	kfk_product.SendMsg(db.KafkaBrokers, "step2-gemini-deduce", msgData) //送到任务二的队列进行处理
+	kfk_product.SendMsg(db.KafkaBrokers, db.Step2Topic, msgData) //送到任务二的队列进行处理
 }
 
 func GetJSON(s string) string {

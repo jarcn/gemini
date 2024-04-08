@@ -73,6 +73,6 @@ func (h *Step1ConsumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSes
 }
 
 func (h *Step1ConsumerGroupHandler) ProcessMessage(message *sarama.ConsumerMessage) bool {
-	log.Printf("Message claimed: partition = %d, offset = %d, topic = %s\n", message.Partition, message.Offset, message.Topic)
+	log.Printf("Message claimed: value lenght = %d, partition = %d, offset = %d, topic = %s\n", len(message.Value), message.Partition, message.Offset, message.Topic)
 	return tasks.DoMerge(message.Value, cache.GetKey())
 }

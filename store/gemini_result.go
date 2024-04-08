@@ -115,7 +115,7 @@ func (gr *GeminiResult) Delete(db *sqlx.DB) error {
 }
 
 func (gr *GeminiResult) FindAll(db *sqlx.DB) ([]GeminiResult, error) {
-	findAll := `select * from qiyee_job_data.tbl_gemini_result where gemini_step1_result !="" and gemini_step2_result !="" limit 5`
+	findAll := `select * from qiyee_job_data.tbl_gemini_result where gemini_step1_result !="" and gemini_step2_result !=""`
 	var result []GeminiResult
 	err := db.Select(&result, findAll)
 	return result, err
