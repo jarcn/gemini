@@ -11,10 +11,6 @@ import (
 	"strconv"
 )
 
-func init() {
-
-}
-
 func Insert2ES(resumeArr []profile.Resume) {
 	// Elasticsearch 连接配置
 	cfg := elasticsearch.Config{

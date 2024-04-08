@@ -9,7 +9,6 @@ require (
 	github.com/elastic/go-elasticsearch/v7 v7.17.10
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/google/generative-ai-go v0.5.0
-	github.com/noaway/dateparse v0.0.0-20171117034806-ad2b19d7b298
 	google.golang.org/api v0.161.0
 )
 

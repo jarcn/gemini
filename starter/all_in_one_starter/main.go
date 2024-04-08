@@ -23,7 +23,7 @@ func initEs() {
 
 func main() {
 	initMysql()
-	initEs()
+	//initEs()
 	go kfk_consumer.Step1ConsumerStart(db.KafkaBrokers, db.Step1Topic, db.Step1Group)
 	go kfk_consumer.Step2ConsumerStart(db.KafkaBrokers, db.Step2Topic, db.Step2Group)
 	log.Println("gemini merge server start success")

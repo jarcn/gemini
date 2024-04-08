@@ -24,13 +24,14 @@ func DoMerge(msg []byte, key string) bool {
 		return true
 	}
 	profile, _ := data["profile"].(string)
-	cv, _ := data["cv"].(string)
 	url, _ := data["url"].(string)
+	cvData := store.CvData{}
+	cv, err := cvData.GetCvByUrl(db.Client(), url)
 	result := store.GeminiResult{
 		GeminiKey:   key,
 		ProfileData: profile,
 		CVURL:       url,
-		CVData:      cv,
+		CVData:      cv.ResumeMsg,
 	}
 	exists, err := result.CvExists(db.Client(), url)
 	if exists {
@@ -42,7 +43,7 @@ func DoMerge(msg []byte, key string) bool {
 		log.Println("insert data error:", err)
 		return false
 	}
-	step1 := GeminiStep1Merge(profile, cv, key)
+	step1 := GeminiStep1Merge(profile, cv.ResumeMsg, key)
 	if step1 == "error" {
 		return true
 	}
