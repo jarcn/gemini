@@ -32,6 +32,7 @@ func DoMerge(msg []byte, key string) bool {
 		ProfileData: profile,
 		CVURL:       url,
 		CVData:      cv.ResumeMsg,
+		Type:        "ZH",
 	}
 	exists, err := result.CvExists(db.Client(), url)
 	if exists {
@@ -75,7 +76,7 @@ func GetJSON(s string) string {
 	return s[start : end+1]
 }
 
-func GeminiStep1Merge(ocrCv, profileCv, key string) string {
+func GeminiStep1Merge(profileCv, ocrCv, key string) string {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, option.WithAPIKey(key))
 	if err != nil {

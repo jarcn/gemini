@@ -20,13 +20,12 @@ func init() {
 	cache.InitKeyCache()
 }
 
-var brokers = []string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"} // 生产环境
-// var brokers = []string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"} // 预发环境
-var topic = "gemini-step2" // 要消费的主题
+// var brokers = []string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"} // 生产环境
+var brokers = []string{"10.128.0.94:9092", "10.128.0.156:9092", "10.128.0.124:9092"} // 预发环境
+var topic = "gemini-step2"                                                           // 要消费的主题
 var consumerGroup = "gemini-step2-group"
 
 func main() {
-	productStart()
 	//consumerStart()
 	//consumerSync()
 }

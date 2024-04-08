@@ -2,6 +2,7 @@ package store
 
 import (
 	"github.com/cookieY/sqlx"
+	_ "github.com/go-sql-driver/mysql"
 	"time"
 )
 
