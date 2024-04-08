@@ -19,6 +19,7 @@ type GeminiResult struct {
 	CreateTime  int64  `json:"create_time" db:"create_time"`
 	UpdateTime  int64  `json:"update_time" db:"update_time"`
 	GeminiKey   string `json:"gemini_key" db:"gemini_key"`
+	Type        string `json:"type" db:"type"`
 }
 
 func (gr *GeminiResult) Create(db *sqlx.DB) (int64, error) {
