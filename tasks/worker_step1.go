@@ -24,12 +24,13 @@ func DoMerge(msg []byte, key string) bool {
 		return true
 	}
 	profile, _ := data["profile"].(string)
+	cv, _ := data["cv"].(string)
 	url, _ := data["url"].(string)
 	result := store.GeminiResult{
 		GeminiKey:   key,
-		ProfileData: "",
+		ProfileData: profile,
 		CVURL:       url,
-		CVData:      profile,
+		CVData:      cv,
 	}
 	exists, err := result.CvExists(db.Client(), url)
 	if exists {
@@ -41,7 +42,7 @@ func DoMerge(msg []byte, key string) bool {
 		log.Println("insert data error:", err)
 		return false
 	}
-	step1 := GeminiStep1Merge(profile, "", key)
+	step1 := GeminiStep1Merge(profile, cv, key)
 	if step1 == "error" {
 		return true
 	}
@@ -111,7 +112,7 @@ func GeminiStep1Merge(ocrCv, profileCv, key string) string {
 	}
 	errorMsg, _ := json.Marshal(resp)
 	reason := resp.Candidates[0].FinishReason
-	if reason == 0 || reason == 1 || reason == 2 || reason == 3 || reason == 4 || reason == 5 {
+	if reason == 0 || reason == 2 || reason == 3 || reason == 4 || reason == 5 {
 		log.Println("step1 call gemini response:", string(errorMsg))
 		return "error"
 	}
@@ -133,7 +134,13 @@ func parseContent(ocrCv, profileCv string) string {
 	if err != nil {
 		panic(err)
 	}
-	data := Data{OcrCV: ocrCv, ProfileCV: profileCv}
+	var out bytes.Buffer
+	err = json.Compact(&out, []byte(profileCv))
+	if err != nil {
+		fmt.Println("Error compacting JSON:", err)
+		return profileCv
+	}
+	data := Data{OcrCV: ocrCv, ProfileCV: out.String()}
 	var buf bytes.Buffer
 	err = temple.Execute(&buf, data)
 	if err != nil {
