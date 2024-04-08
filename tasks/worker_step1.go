@@ -27,6 +27,10 @@ func DoMerge(msg []byte, key string) bool {
 	url, _ := data["url"].(string)
 	cvData := store.CvData{}
 	cv, err := cvData.GetCvByUrl(db.Client(), url)
+	if err != nil || cv == nil {
+		log.Printf("url:%s not have data \r", url)
+		return true
+	}
 	result := store.GeminiResult{
 		GeminiKey:   key,
 		ProfileData: profile,
