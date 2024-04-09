@@ -159,7 +159,7 @@ func GeminiStep1Merge(profileCv, ocrCv, key string) string {
 		},
 	}
 	content := parseContent(ocrCv, profileCv)
-	log.Printf("call step1 para length:%d", len(content))
+	log.Printf("call step1 para length:%d\r\n", len(content))
 	resp, err := model.GenerateContent(ctx, genai.Text(content))
 	if resp == nil || err != nil {
 		log.Println("step1 gemini response data is null", err)

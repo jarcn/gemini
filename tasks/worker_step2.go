@@ -147,11 +147,13 @@ func step2ContentBuilder(step1Result string) string {
 	}
 	var out bytes.Buffer
 	err = json.Compact(&out, []byte(step1Result))
+	var data Step1Result
 	if err != nil {
 		fmt.Println("Error compacting JSON:", err)
-		return step1Result
+		data.Step1Result = step1Result
+	} else {
+		data.Step1Result = out.String()
 	}
-	data := Step1Result{Step1Result: out.String()}
 	var buf bytes.Buffer
 	err = temple.Execute(&buf, data)
 	if err != nil {

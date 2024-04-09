@@ -12,7 +12,7 @@ type GltZhData struct {
 }
 
 func (cv *GltZhData) SelectAllData(db *sqlx.DB) ([]GltZhData, error) {
-	querySql := `select * from qiyee_job_data.tbl_glt_zh_profile order by id asc limit 10,2000`
+	querySql := `select * from qiyee_job_data.tbl_glt_zh_profile order by id asc limit 2000,2000`
 	var result []GltZhData
 	err := db.Select(&result, querySql)
 	if err != nil {
