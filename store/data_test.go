@@ -16,3 +16,14 @@ func TestQuery(t *testing.T) {
 	msg := cv.ResumeMsg
 	fmt.Println(msg)
 }
+
+func TestQueryById(t *testing.T) {
+	db.MustInitMySQL(db.MysqlAddr)
+	cvData := GeminiResult{}
+	cv, err := cvData.QueryById(db.Client(), 1)
+	if err != nil {
+		fmt.Println(err)
+	}
+	msg := cv.Type
+	fmt.Println(msg)
+}

@@ -2,10 +2,7 @@ package cache
 
 import (
 	"gemini/db"
-	"gemini/store"
 	"log"
-	"math/rand"
-	"time"
 )
 
 var KeyCache []string
@@ -22,24 +19,25 @@ func InitKeyCache() {
 }
 
 func GetKey() string {
-	rand.NewSource(time.Now().UnixNano())
-	randomIndex := rand.Intn(len(KeyCache))
-	key := KeyCache[randomIndex]
-	result := store.GeminiResult{}
-	count, err := result.CountByKey(db.Client(), key)
-	if err != nil {
-		return GetKey()
-	}
-	if count == 0 {
-		return key
-	}
-	currentTime := time.Now().Unix()
-	if currentTime-count > 60 {
-		return key
-	} else {
-		time.Sleep(time.Second * 60)
-	}
-	return GetKey()
+	return "AIzaSyD50ffX7kVQs7AYAR-MBGLCs5O_LxCKOfQ"
+	//rand.NewSource(time.Now().UnixNano())
+	//randomIndex := rand.Intn(len(KeyCache))
+	//key := KeyCache[randomIndex]
+	//result := store.GeminiResult{}
+	//count, err := result.CountByKey(db.Client(), key)
+	//if err != nil {
+	//	return GetKey()
+	//}
+	//if count == 0 {
+	//	return key
+	//}
+	//currentTime := time.Now().Unix()
+	//if currentTime-count > 60 {
+	//	return key
+	//} else {
+	//	time.Sleep(time.Second * 60)
+	//}
+	//return GetKey()
 }
 
 type KeyInfo struct {
