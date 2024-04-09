@@ -72,6 +72,20 @@ func (gr *GeminiResult) CvExists(db *sqlx.DB, cvUrl string) (*GeminiResult, erro
 	}
 }
 
+func (gr *GeminiResult) CvExistsN(db *sqlx.DB, cvUrl string) (*GeminiResult, error) {
+	countSql := ` select * from qiyee_job_data.tbl_gemini_result where cv_url = ? and gemini_step1_result != ""`
+	var result []GeminiResult
+	err := db.Select(&result, countSql, cvUrl)
+	if err != nil {
+		return nil, err
+	}
+	if len(result) >= 1 {
+		return &result[0], nil
+	} else {
+		return nil, nil
+	}
+}
+
 func (gr *GeminiResult) QueryById(db *sqlx.DB, id int64) (*GeminiResult, error) {
 	countSql := ` select * from qiyee_job_data.tbl_gemini_result where id = ?`
 	var result []GeminiResult

@@ -23,9 +23,9 @@ func main() {
 		marshal, _ := json.Marshal(data)
 		merge := tasks.SyncDoMerge(marshal, cache.GetKey())
 		if merge != nil {
-			d := make(map[string]int64)
-			d["id"] = merge.ID
-			step2Json, _ := json.Marshal(d)
+			sd := make(map[string]int64)
+			sd["id"] = merge.ID
+			step2Json, _ := json.Marshal(sd)
 			tasks.DoDeduce(step2Json, cache.GetKey(), false)
 		}
 	}

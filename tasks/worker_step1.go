@@ -87,10 +87,9 @@ func SyncDoMerge(msg []byte, key string) *store.GeminiResult {
 		CVData:      cv.ResumeMsg,
 		Type:        "ZH",
 	}
-	exists, err := result.CvExists(db.Client(), url)
+	exists, err := result.CvExistsN(db.Client(), url)
 	if exists != nil {
-		log.Println("cv url has exists")
-		return nil
+		return exists
 	}
 	id, err := result.Create(db.Client())
 	if err != nil {
