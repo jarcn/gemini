@@ -17,7 +17,7 @@ func init() {
 	//cache.InitKeyCache()
 }
 
-var keys = []string{"AIzaSyD50ffX7kVQs7AYAR-MBGLCs5O_LxCKOfQ", "AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90", "AIzaSyD50ffX7kVQs7AYAR-MBGLCs5O_LxCKOfQ", "AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90"}
+var keys = []string{"AIzaSyD50ffX7kVQs7AYAR-MBGLCs5O_LxCKOfQ", "AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90", "AIzaSyD50ffX7kVQs7AYAR-MBGLCs5O_LxCKOfQ", "AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90", "AIzaSyD50ffX7kVQs7AYAR-MBGLCs5O_LxCKOfQ", "AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90"}
 
 func main() {
 	for i := 0; i < len(keys); i++ {
