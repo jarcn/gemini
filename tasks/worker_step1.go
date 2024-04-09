@@ -89,6 +89,7 @@ func SyncDoMerge(msg []byte, key string) *store.GeminiResult {
 	}
 	exists, err := result.CvExistsN(db.Client(), url)
 	if exists != nil {
+		log.Printf("resume url:%s already run step1", url)
 		return exists
 	}
 	id, err := result.Create(db.Client())
@@ -107,7 +108,7 @@ func SyncDoMerge(msg []byte, key string) *store.GeminiResult {
 	result.GeminiStep1 = jsonResult
 	result.ID = id
 	err = result.Update(db.Client())
-	log.Println("update gemini result", jsonResult)
+	log.Printf("update step1 gemini result length:%d\r\n", len(jsonResult))
 	return &result
 }
 
@@ -158,6 +159,7 @@ func GeminiStep1Merge(profileCv, ocrCv, key string) string {
 		},
 	}
 	content := parseContent(ocrCv, profileCv)
+	log.Printf("call step1 para length:%d", len(content))
 	resp, err := model.GenerateContent(ctx, genai.Text(content))
 	if resp == nil || err != nil {
 		log.Println("step1 gemini response data is null", err)

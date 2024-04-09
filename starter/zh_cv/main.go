@@ -6,6 +6,7 @@ import (
 	"gemini/db"
 	"gemini/store"
 	"gemini/tasks"
+	"log"
 )
 
 func init() {
@@ -16,6 +17,7 @@ func init() {
 func main() {
 	var d = store.GltZhData{}
 	allData, _ := d.SelectAllData(db.Client())
+	log.Printf("query %d rows,start do task...\r\n", len(allData))
 	for _, datum := range allData {
 		data := make(map[string]string)
 		data["url"] = datum.URL

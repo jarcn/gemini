@@ -33,7 +33,8 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 		return false
 	}
 	if result.GeminiStep1 == "" {
-		step1 := GeminiStep1Merge(result.CVData, "", key)
+		log.Printf("id:%d,url:%s not hava step1 result,start step1 task", result.ID, result.CVURL)
+		step1 := GeminiStep1Merge(result.ProfileData, result.CVData, key)
 		if step1 == "error" {
 			return true
 		}
@@ -44,7 +45,7 @@ func DoDeduce(msg []byte, key string, isCvData bool) bool {
 		result.GeminiStep1 = jsonResult
 		result.ID = id
 		err = result.Update(client)
-		log.Println("update gemini result", jsonResult)
+		log.Printf("update step1 gemini result length:%d\r\n", len(jsonResult))
 	}
 	if isCvData {
 		if result.CVData == "" {
@@ -115,7 +116,6 @@ func GeminiStep2Deduce(step1Result, key string) string {
 	content := step2ContentBuilder(step1Result)
 	log.Printf("call step2 request para length:%d\r\n", len(content))
 	text := genai.Text(content)
-	log.Printf("call step2 request data:%s\r\n", text)
 	resp, err := model.GenerateContent(ctx, text)
 	if resp == nil || err != nil {
 		log.Println("step2 gemini response data is null", err)
