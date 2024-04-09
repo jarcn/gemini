@@ -12,9 +12,19 @@ type GltZhData struct {
 }
 
 func (cv *GltZhData) SelectAllData(db *sqlx.DB) ([]GltZhData, error) {
-	querySql := `select * from qiyee_job_data.tbl_glt_zh_profile order by id asc limit 2000,2000`
+	querySql := `select * from qiyee_job_data.tbl_glt_zh_profile order by id asc limit 6000,2000`
 	var result []GltZhData
 	err := db.Select(&result, querySql)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (cv *GltZhData) SelectByPage(start, end int, db *sqlx.DB) ([]GltZhData, error) {
+	querySql := `select * from qiyee_job_data.tbl_glt_zh_profile order by id asc limit ?,?`
+	var result []GltZhData
+	err := db.Select(&result, querySql, start, end)
 	if err != nil {
 		return nil, err
 	}
