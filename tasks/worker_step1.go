@@ -29,7 +29,7 @@ func DoMerge(msg []byte, key string) bool {
 	cv, err := cvData.GetCvByUrl(db.Client(), url)
 	if err != nil || cv == nil {
 		log.Printf("url:%s not have data \r", url)
-		return true
+		return false
 	}
 	result := store.GeminiResult{
 		GeminiKey:   key,
@@ -39,8 +39,9 @@ func DoMerge(msg []byte, key string) bool {
 		Type:        "ZH",
 	}
 	exists, err := result.CvExists(db.Client(), url)
-	if exists {
+	if exists != nil {
 		log.Println("cv url has exists")
+		doStep2(exists.ID)
 		return true
 	}
 	id, err := result.Create(db.Client())
@@ -62,6 +63,53 @@ func DoMerge(msg []byte, key string) bool {
 	log.Println("update gemini result", jsonResult)
 	doStep2(id)
 	return err == nil
+}
+
+func SyncDoMerge(msg []byte, key string) *store.GeminiResult {
+	data := make(map[string]interface{})
+	err := json.Unmarshal(msg, &data)
+	if err != nil {
+		log.Println("Error decoding JSON:", err)
+		return nil
+	}
+	profile, _ := data["profile"].(string)
+	url, _ := data["url"].(string)
+	cvData := store.CvData{}
+	cv, err := cvData.GetCvByUrl(db.Client(), url)
+	if err != nil || cv == nil {
+		log.Printf("url:%s not have data \r", url)
+		return nil
+	}
+	result := store.GeminiResult{
+		GeminiKey:   key,
+		ProfileData: profile,
+		CVURL:       url,
+		CVData:      cv.ResumeMsg,
+		Type:        "ZH",
+	}
+	exists, err := result.CvExists(db.Client(), url)
+	if exists != nil {
+		log.Println("cv url has exists")
+		return nil
+	}
+	id, err := result.Create(db.Client())
+	if err != nil {
+		log.Println("insert data error:", err)
+		return nil
+	}
+	step1 := GeminiStep1Merge(profile, cv.ResumeMsg, key)
+	if step1 == "error" {
+		return nil
+	}
+	if step1 == "" {
+		return nil
+	}
+	jsonResult := GetJSON(step1)
+	result.GeminiStep1 = jsonResult
+	result.ID = id
+	err = result.Update(db.Client())
+	log.Println("update gemini result", jsonResult)
+	return &result
 }
 
 func doStep2(id int64) {

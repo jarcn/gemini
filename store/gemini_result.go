@@ -24,9 +24,9 @@ type GeminiResult struct {
 
 func (gr *GeminiResult) Create(db *sqlx.DB) (int64, error) {
 	currentTime := time.Now().Unix()
-	insertQuery := `INSERT INTO tbl_gemini_result (cv_data, profile_data, cv_url, gemini_step1_result, gemini_step2_result, gemini_step3_result, gemini_step4_result, create_time, update_time, gemini_key)
-        			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-	result, err := db.Exec(insertQuery, gr.CVData, gr.ProfileData, gr.CVURL, gr.GeminiStep1, gr.GeminiStep2, gr.GeminiStep3, gr.GeminiStep4, currentTime, currentTime, gr.GeminiKey)
+	insertQuery := `INSERT INTO tbl_gemini_result (cv_data, profile_data, cv_url, gemini_step1_result, gemini_step2_result, gemini_step3_result, gemini_step4_result, create_time, update_time, gemini_key,type)
+        			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`
+	result, err := db.Exec(insertQuery, gr.CVData, gr.ProfileData, gr.CVURL, gr.GeminiStep1, gr.GeminiStep2, gr.GeminiStep3, gr.GeminiStep4, currentTime, currentTime, gr.GeminiKey, gr.Type)
 	if err != nil {
 		return 0, err
 	}
@@ -58,17 +58,17 @@ func (gr *GeminiResult) CountByKey(db *sqlx.DB, key string) (int64, error) {
 	}
 }
 
-func (gr *GeminiResult) CvExists(db *sqlx.DB, cvUrl string) (bool, error) {
+func (gr *GeminiResult) CvExists(db *sqlx.DB, cvUrl string) (*GeminiResult, error) {
 	countSql := ` select * from qiyee_job_data.tbl_gemini_result where cv_url = ?`
 	var result []GeminiResult
 	err := db.Select(&result, countSql, cvUrl)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	if len(result) >= 1 {
-		return true, nil
+		return &result[0], nil
 	} else {
-		return false, nil
+		return nil, nil
 	}
 }
 
