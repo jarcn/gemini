@@ -22,7 +22,7 @@ func (cv *GltZhData) SelectAllData(db *sqlx.DB) ([]GltZhData, error) {
 }
 
 func (cv *GltZhData) SelectByPage(start, end int, db *sqlx.DB) ([]GltZhData, error) {
-	querySql := `select * from qiyee_job_data.tbl_glt_zh_profile order by id asc limit ?,?`
+	querySql := `select * from qiyee_job_data.tbl_glt_zh_profile order by id desc limit ?,?`
 	var result []GltZhData
 	err := db.Select(&result, querySql, start, end)
 	if err != nil {

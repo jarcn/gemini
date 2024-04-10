@@ -12,16 +12,16 @@ import (
 )
 
 func init() {
-	//db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
-	db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //生产环境
+	db.MustInitMySQL("sc_kupu:Sc_kupu_1234@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
+	//db.MustInitMySQL("kp_user_local:Kupu123!@#@tcp(10.131.0.206:3306)/qiyee_job_data") //生产环境
 	//cache.InitKeyCache()
 }
 
-var keys = []string{"AIzaSyD50ffX7kVQs7AYAR-MBGLCs5O_LxCKOfQ", "AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90", "AIzaSyD50ffX7kVQs7AYAR-MBGLCs5O_LxCKOfQ", "AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90", "AIzaSyD50ffX7kVQs7AYAR-MBGLCs5O_LxCKOfQ", "AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90"}
+var keys = []string{"AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90", "AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90", "AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90"}
 
 func main() {
 	for i := 0; i < len(keys); i++ {
-		go run(keys[i], i*2000, 2000)
+		go run(keys[i], i*3000, 3000)
 	}
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
