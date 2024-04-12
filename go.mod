@@ -7,16 +7,18 @@ require (
 	github.com/buger/jsonparser v1.1.1
 	github.com/cookieY/sqlx v1.3.0
 	github.com/elastic/go-elasticsearch/v7 v7.17.10
-	github.com/go-sql-driver/mysql v1.7.1
-	github.com/google/generative-ai-go v0.5.0
+	github.com/go-sql-driver/mysql v1.8.1
+	github.com/google/generative-ai-go v0.10.0
 	google.golang.org/api v0.161.0
 )
 
 require (
+	cloud.google.com/go v0.111.0 // indirect
 	cloud.google.com/go/ai v0.3.0 // indirect
 	cloud.google.com/go/compute v1.23.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/longrunning v0.5.4 // indirect
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/eapache/go-resiliency v1.6.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3 // indirect

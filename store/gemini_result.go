@@ -122,6 +122,13 @@ func (gr *GeminiResult) FindAll(db *sqlx.DB) ([]GeminiResult, error) {
 	return result, err
 }
 
+func (gr *GeminiResult) FindAllError(db *sqlx.DB) ([]*GeminiResult, error) {
+	findAll := `select * from qiyee_job_data.tbl_gemini_result where gemini_step1_result ="" or gemini_step2_result ="" limit 100`
+	var result []*GeminiResult
+	err := db.Select(&result, findAll)
+	return result, err
+}
+
 func (gr *GeminiResult) SelectAll(db *sqlx.DB) ([]GeminiResult, error) {
 	findAll := `select id from qiyee_job_data.tbl_gemini_result where gemini_step1_result !="" and gemini_step2_result = ""`
 	var result []GeminiResult
@@ -142,4 +149,11 @@ func (gr *GeminiResult) FindByIds(ids []int64, db *sqlx.DB) ([]GeminiResult, err
 		return nil, err
 	}
 	return result, nil
+}
+
+func (gr *GeminiResult) SelectAllStep2Result(db *sqlx.DB) ([]GeminiResult, error) {
+	findAll := `select gemini_step2_result from qiyee_job_data.tbl_gemini_result where gemini_step2_result !="" and type = "HRA"`
+	var result []GeminiResult
+	err := db.Select(&result, findAll)
+	return result, err
 }
