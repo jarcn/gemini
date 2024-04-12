@@ -17,7 +17,7 @@ func init() {
 }
 
 // var keys = []string{"AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90", "AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90", "AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90"}
-var keys = []string{"AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90"}
+var keys = []string{"AIzaSyBhqbuaUcnR-wEuVNFFolxKgO1y6PzPHC4"}
 
 func main() {
 	// 创建channel用于存储数据
@@ -26,12 +26,13 @@ func main() {
 	go func() {
 		var d = store.GeminiResult{}
 		allData, _ := d.FindAllError(db.Client())
+		log.Printf("query %d rows task starting...\r\n", len(allData))
 		for _, datum := range allData {
 			dataChan <- *datum
 		}
 	}()
 	// 启动4个goroutines并行消费数据
-	for i := 0; i < 4; i++ {
+	for i := 0; i < 2; i++ {
 		go func(key string) {
 			for datum := range dataChan {
 				merge := tasks.ReDoMergeBeat(datum, key)
