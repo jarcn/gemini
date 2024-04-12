@@ -53,7 +53,7 @@ func InvokeGemini(content, key string) (*Response, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	respStr, _ := json.Marshal(resp)
-	log.Printf("gemini resp:%s\r\n", respStr)
+	log.Printf("gemini resp:%s\r\n", string(respStr))
 	if err != nil {
 		fmt.Println("Error making request:", err)
 		return nil, err
