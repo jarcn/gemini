@@ -74,18 +74,18 @@ func SyncDoMerge(msg []byte, key string) *store.GeminiResult {
 	}
 	profile, _ := data["profile"].(string)
 	url, _ := data["url"].(string)
-	cvData := store.CvData{}
-	cv, err := cvData.GetCvByUrl(db.Client(), url)
-	if err != nil || cv == nil {
-		log.Printf("url:%s not have data \r", url)
-		return nil
-	}
+	//cvData := store.CvData{}
+	//cv, err := cvData.GetCvByUrl(db.Client(), url)
+	//if err != nil || cv == nil {
+	//	log.Printf("url:%s not have data \r", url)
+	//	return nil
+	//}
 	result := store.GeminiResult{
 		GeminiKey:   key,
-		ProfileData: profile,
+		ProfileData: "",
 		CVURL:       url,
-		CVData:      cv.ResumeMsg,
-		Type:        "ZH",
+		CVData:      profile,
+		Type:        "HRAn",
 	}
 	exists, err := result.CvExists(db.Client(), url)
 	if exists != nil {
@@ -97,7 +97,7 @@ func SyncDoMerge(msg []byte, key string) *store.GeminiResult {
 		log.Println("insert data error:", err)
 		return nil
 	}
-	step1 := GeminiStep1Merge(profile, cv.ResumeMsg, key)
+	step1 := GeminiStep1Merge(result.ProfileData, result.CVData, key)
 	if step1 == "error" {
 		return nil
 	}
