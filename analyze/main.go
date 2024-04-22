@@ -34,12 +34,12 @@ func main() {
 	var data = store.GeminiResult{}
 	result, _ := data.SelectAllStep2Result(db.Client())
 	//fmt.Printf("%s,%s,%s,%s\r\n", "公司名称", "行业分类", "职位名称", "职位类别")
-	fmt.Printf("%s,%s\r\n", "degree", "major")
+	//fmt.Printf("%s,%s\r\n", "degree", "major")
 	for _, info := range result {
 		step2 := info.GeminiStep2
-		_, eduArrays := profile.ParseStep2JsonData([]byte(step2))
-		//printExp(expArrays)
-		printEdu(eduArrays)
+		expArrays, _ := profile.ParseStep2JsonData([]byte(step2))
+		printExp(expArrays)
+		//printEdu(eduArrays)
 	}
 	//fmt.Printf("WorkExperienceTotal:%d,EduTotal:%d\r\n", WorkExperienceTotal, EduTotal)
 	//fmt.Printf("WorkExperience:IndustryAttribute:%d,CompanyIntroduction:%d,PositionCategory:%d,PositionLevel:%d,ManagementScope:%d\r\n",
@@ -54,7 +54,8 @@ func printExp(expArr []profile.WorkExperienceArray) {
 		name := data.CompanyName
 		companyIndustry := data.CompanyAdditionalInfo.IndustryAttribute.Value //行业
 		positionCategory := data.CompanyAdditionalInfo.PositionCategory.Value //职类
-		fmt.Printf("%s,%s,%s,%s\r\n", name, companyIndustry, title, positionCategory)
+		positionLevel := data.CompanyAdditionalInfo.PositionLevel.Value       //职类
+		fmt.Printf("%s,%s,%s,%s,%s\r\n", name, title, companyIndustry, positionCategory, positionLevel)
 		//industry := data.CompanyAdditionalInfo.IndustryAttribute.Value
 		//if strings.EqualFold(industry, "Not provided") || strings.EqualFold(industry, "Unknown") || industry == "" ||
 		//	strings.Contains(industry, "Unknown") || strings.Contains(industry, "unknown") {
@@ -101,3 +102,30 @@ func printEdu(eduArr []profile.EduInfoArray) {
 		//}
 	}
 }
+
+//func main() {
+//	var ciMap = make(map[string]string)
+//	industry := store.CompanyIndustry{}
+//	data, _ := industry.SelectAllData(db.Client())
+//	for _, datum := range data {
+//		ciMap[datum.CompanyName] = datum.CompanyIndustry
+//	}
+//	fmt.Println("cache done")
+//	result := store.GeminiResult{}
+//	step2Result, _ := result.SelectAllStep2Result(db.Client())
+//	for _, geminiResult := range step2Result {
+//		step2 := geminiResult.GeminiStep2
+//		step2Json := profile.ParseStep2Json([]byte(step2))
+//		for _, work := range step2Json.WorkExperienceArray {
+//			ciStr := ciMap[work.CompanyName]
+//			if ciStr == "" {
+//				continue
+//			}
+//			work.CompanyAdditionalInfo.IndustryAttribute.Value = ciStr
+//		}
+//		marshal, _ := json.Marshal(step2Json)
+//		geminiResult.GeminiStep3 = string(marshal)
+//		geminiResult.Update(db.Client())
+//		fmt.Println("update done")
+//	}
+//}

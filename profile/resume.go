@@ -2,6 +2,7 @@ package profile
 
 type Resume struct {
 	ID                 int64              `json:"id"`
+	Type               string             `json:"type"`
 	BasicInformation   BasicInformation   `json:"basic_information"`
 	ContactInformation ContactInformation `json:"contact_information"`
 	SefIntroduction    SefIntroduction    `json:"sef_introduction"`
@@ -170,4 +171,9 @@ type EduInfoArray struct {
 	Degree                  string                  `json:"degree"`
 	Major                   string                  `json:"major"`
 	EducationAdditionalInfo EducationAdditionalInfo `json:"education_additional_info"`
+}
+
+type Step2Info struct {
+	WorkExperienceArray []WorkExperienceArray `json:"work_experience_array"`
+	EduInfoArray        []EduInfoArray        `json:"edu_info_array"`
 }

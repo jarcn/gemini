@@ -35,6 +35,24 @@ func MergeStep1AndStep2(step1Json, step2Json []byte) *Resume {
 	return resumeData
 }
 
+func ParseStep2Json(jsonData []byte) Step2Info {
+	var workExpDeduceArr []WorkExperienceArray
+	var eduInfoDeduceArr []EduInfoArray
+	jsonparser.ArrayEach(jsonData, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		var exp WorkExperienceArray
+		parseString, _ := jsonparser.ParseString(value)
+		json.Unmarshal([]byte(parseString), &exp)
+		workExpDeduceArr = append(workExpDeduceArr, exp)
+	}, "work_experience_array")
+	jsonparser.ArrayEach(jsonData, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		var edu EduInfoArray
+		parseString, _ := jsonparser.ParseString(value)
+		json.Unmarshal([]byte(parseString), &edu)
+		eduInfoDeduceArr = append(eduInfoDeduceArr, edu)
+	}, "edu_info_array")
+	return Step2Info{WorkExperienceArray: workExpDeduceArr, EduInfoArray: eduInfoDeduceArr}
+}
+
 // ParseStep2JsonData 解析任务二工作经历Json结果
 func ParseStep2JsonData(jsonData []byte) ([]WorkExperienceArray, []EduInfoArray) {
 	var workExpDeduceArr []WorkExperienceArray
