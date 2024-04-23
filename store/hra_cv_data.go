@@ -11,7 +11,7 @@ type HraCvData struct {
 }
 
 func (cv *HraCvData) SelectAll(db *sqlx.DB) ([]HraCvData, error) {
-	querySql := `select distinct a.resume_link,b.content from crmdb.tbl_hr_upload_cv_record a join crmdb.tbl_order_external_js_cv_content b on a.external_js_id = b.external_js_id and a.create_time > "2024-03-26 10:11:53" limit 10;`
+	querySql := `select distinct a.resume_link,b.content from crmdb.tbl_hr_upload_cv_record a join crmdb.tbl_order_external_js_cv_content b on a.external_js_id = b.external_js_id and a.create_time > "2024-03-26 10:11:53";`
 	var result []HraCvData
 	err := db.Select(&result, querySql)
 	if err != nil {

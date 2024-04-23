@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"gemini/db"
 	"gemini/store"
+	"gemini/tasks"
 	"log"
 	"os"
 	"os/signal"
@@ -13,7 +15,7 @@ func init() {
 	db.MustInitMySQL("root:qiyi123!@#@tcp(10.128.0.28:3306)/qiyee_job_data") //生产环境
 }
 
-var keys = []string{"AIzaSyB5Yx-nRni3ILCiD8CAc8zKTOcEFInDv90"}
+var keys = []string{"AIzaSyA7TVlO6k72aC1SWrZBPHYuqV04NYPGw8I"}
 
 func main() {
 	// 创建channel用于存储数据
@@ -22,6 +24,7 @@ func main() {
 	go func() {
 		var d = store.HraCvData{}
 		allData, _ := d.SelectAll(db.Client())
+		log.Printf("query total %d rows data \r\n", len(allData))
 		for _, datum := range allData {
 			dataChan <- datum
 		}
@@ -31,20 +34,19 @@ func main() {
 	for i := 0; i < 4; i++ {
 		go func(key string) {
 			for datum := range dataChan {
-				log.Printf("url:%s,content:%s\r\n", datum.ResumeLink, datum.Content)
-				//data := map[string]string{
-				//	"url":     datum.ResumeLink,
-				//	"profile": datum.Content,
-				//}
-				//marshal, _ := json.Marshal(data)
-				//merge := tasks.SyncDoMerge(marshal, key)
-				//if merge != nil {
-				//	sd := map[string]int64{
-				//		"id": merge.ID,
-				//	}
-				//	step2Json, _ := json.Marshal(sd)
-				//	tasks.DoDeduce(step2Json, key, false)
-				//}
+				data := map[string]string{
+					"url":     datum.ResumeLink,
+					"profile": datum.Content,
+				}
+				marshal, _ := json.Marshal(data)
+				merge := tasks.SyncDoMerge(marshal, key)
+				if merge != nil {
+					sd := map[string]int64{
+						"id": merge.ID,
+					}
+					step2Json, _ := json.Marshal(sd)
+					tasks.DoDeduce(step2Json, key, false)
+				}
 			}
 		}(keys[0]) // 循环使用keys中的key
 	}

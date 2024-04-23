@@ -158,7 +158,7 @@ func GeminiStep1Merge(profileCv, ocrCv, key string) string {
 			Threshold: genai.HarmBlockMediumAndAbove,
 		},
 	}
-	content := parseContent(ocrCv, profileCv)
+	content := parseContent(profileCv, ocrCv)
 	log.Printf("call step1 para length:%d\r\n", len(content))
 	resp, err := model.GenerateContent(ctx, genai.Text(content))
 	if resp == nil || err != nil {
@@ -184,18 +184,22 @@ func GeminiStep1Merge(profileCv, ocrCv, key string) string {
 	return fmt.Sprintf("%s", part)
 }
 
-func parseContent(ocrCv, profileCv string) string {
+func parseContent(profileCv, ocrCv string) string {
 	temple, err := template.New("gemini-step1").Parse(tpl.STEP1)
 	if err != nil {
 		panic(err)
 	}
 	var out bytes.Buffer
 	err = json.Compact(&out, []byte(profileCv))
+	data := Data{}
 	if err != nil {
 		fmt.Println("Error compacting JSON:", err)
-		return profileCv
+		data.OcrCV = ocrCv
+		data.ProfileCV = profileCv
+	} else {
+		data.OcrCV = ocrCv
+		data.ProfileCV = out.String()
 	}
-	data := Data{OcrCV: ocrCv, ProfileCV: out.String()}
 	var buf bytes.Buffer
 	err = temple.Execute(&buf, data)
 	if err != nil {
