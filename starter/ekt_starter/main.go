@@ -34,7 +34,7 @@ func main() {
 			data := parseData(content)
 			dataArr = append(dataArr, data...)
 			if len(dataArr) == 1000 {
-				save2Es(data)
+				save2Es(dataArr)
 				dataArr = []profile.Talent{}
 			}
 		}
