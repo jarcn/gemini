@@ -1,163 +1,268 @@
 {"hits" : [
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "21164",
-    "_score" : 32.70227,
+    "_id" : "479",
+    "_score" : 23.251549,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "30713",
-    "_score" : 27.31546,
+    "_id" : "193966",
+    "_score" : 22.94046,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "16474",
-    "_score" : 22.463322,
+    "_id" : "354952",
+    "_score" : 22.462334,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "16962",
-    "_score" : 22.310465,
+    "_id" : "475262",
+    "_score" : 22.18632,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "29162",
-    "_score" : 21.08308,
+    "_id" : "290978",
+    "_score" : 22.109074,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "16599",
-    "_score" : 21.00285,
+    "_id" : "304646",
+    "_score" : 21.841667,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "26353",
-    "_score" : 20.117002,
+    "_id" : "51452",
+    "_score" : 21.76024,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "9447",
-    "_score" : 19.704266,
+    "_id" : "658892",
+    "_score" : 21.625027,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "3151",
-    "_score" : 19.173956,
+    "_id" : "655484",
+    "_score" : 21.591038,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "15153",
-    "_score" : 18.480604,
+    "_id" : "640680",
+    "_score" : 21.591038,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "9896",
-    "_score" : 18.404316,
+    "_id" : "655890",
+    "_score" : 21.577053,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "24279",
-    "_score" : 18.309834,
+    "_id" : "648644",
+    "_score" : 21.549084,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "5951",
-    "_score" : 18.235003,
+    "_id" : "491754",
+    "_score" : 21.375782,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "6743",
-    "_score" : 17.733614,
+    "_id" : "5543",
+    "_score" : 21.257587,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "15888",
-    "_score" : 17.728525,
+    "_id" : "362484",
+    "_score" : 21.00018,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "25871",
-    "_score" : 17.26935,
+    "_id" : "161",
+    "_score" : 20.966644,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "20830",
-    "_score" : 16.501202,
+    "_id" : "1152",
+    "_score" : 20.85992,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "25983",
-    "_score" : 16.367334,
+    "_id" : "2972",
+    "_score" : 20.574009,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "19463",
-    "_score" : 16.218742,
+    "_id" : "80646",
+    "_score" : 20.342009,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "139",
-    "_score" : 15.558303,
+    "_id" : "659998",
+    "_score" : 20.30589,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "3445",
-    "_score" : 15.554516,
+    "_id" : "591552",
+    "_score" : 19.975632,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "30394",
-    "_score" : 14.837797,
+    "_id" : "748988",
+    "_score" : 19.696594,
     "_source" : { }
   },
   {
-    "_index" : "cvs_data",
+    "_index" : "ekt_data",
     "_type" : "_doc",
-    "_id" : "9379",
-    "_score" : 14.620876,
+    "_id" : "647708",
+    "_score" : 19.696594,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "358608",
+    "_score" : 19.329014,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "744272",
+    "_score" : 19.25098,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "628540",
+    "_score" : 19.102642,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "681174",
+    "_score" : 18.774406,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "11803",
+    "_score" : 18.774406,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "18420",
+    "_score" : 18.765709,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "1855",
+    "_score" : 18.763603,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "590228",
+    "_score" : 18.763603,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "50254",
+    "_score" : 18.367214,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "23120",
+    "_score" : 17.9623,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "42474",
+    "_score" : 17.862501,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "542004",
+    "_score" : 17.634932,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "62128",
+    "_score" : 17.473444,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "24823",
+    "_score" : 16.888546,
+    "_source" : { }
+  },
+  {
+    "_index" : "ekt_data",
+    "_type" : "_doc",
+    "_id" : "310",
+    "_score" : 14.775919,
     "_source" : { }
   }
 ]}
